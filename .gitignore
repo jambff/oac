@@ -1,0 +1,29 @@
+# Packages
+.yalc
+yalc.lock
+node_modules/
+
+# Build
+dist/
+*.tsbuildinfo
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+
+# IDE
+.idea/
+
+# Tests
+coverage/
+.jest/
+
+# Vi
+*.swp
+
+# Generated client code
+packages/client/src/client.ts
+packages/client/src/types.ts
+packages/client/src/version.ts

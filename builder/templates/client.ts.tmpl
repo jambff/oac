@@ -1,0 +1,85 @@
+/**
+ * This file was auto-generated.
+ * Do not make direct changes to the file.
+ */
+
+import { operations } from './types';
+{{#each operations}}
+
+export type {{responseTypeName}} = {{{responseTypeRef}}};
+{{#if dataTypeRef}}
+
+export type {{dataTypeName}} = {{{dataTypeRef}}};
+{{/if}}
+{{#if hasOptions}}
+
+export type {{optionsTypeName}} = {
+  {{#if pathParametersTypeRef}}
+  params: {{{pathParametersTypeRef}}};
+  {{else}}
+  params?: null;
+  {{/if}}
+  {{#if queryParametersTypeRef}}
+  query{{#unless hasRequiredQueryParameters}}?{{/unless}}: {{{queryParametersTypeRef}}};
+  {{else}}
+  query?: null;
+  {{/if}}
+  {{#if dataTypeRef}}
+  data: {{{dataTypeName}}};
+  {{else}}
+  data?: null;
+  {{/if}}
+};
+{{/if}}
+{{/each}}
+
+{{#if operationsResponses.length}}
+export type OperationResponses =
+{{#each operationsResponses}}
+  {{this}}{{#if @last}};{{else}} |{{/if}}
+{{/each}}
+{{else}}
+export type OperationResponses = any;
+{{/if}}
+
+{{#if operationsOptions.length}}
+export type OperationOptions =
+{{#each operationsOptions}}
+  {{this}}{{#if @last}};{{else}} |{{/if}}
+{{/each}}
+{{else}}
+export type OperationOptions = {
+  params?: never;
+  data?: never;
+  query?: never;
+};
+{{/if}}
+
+export type OperationConfig = {
+  endpoint: string;
+  method: string;
+  secure: boolean;
+}
+
+export type JamBffRequest = (
+  operationConfig: OperationConfig,
+  options?: OperationOptions,
+) => Promise<OperationResponses>;
+
+export type JamBffClient = {
+  {{#each operations}}
+  {{operationId}}: ({{#if hasOptions}}options: {{optionsTypeName}}{{/if}}) => Promise<{{responseTypeName}}>;
+  {{/each}}
+}
+
+export const create = (request: JamBffRequest): JamBffClient => ({
+  {{#each operations}}
+  async {{operationId}}({{#if hasOptions}}options: {{optionsTypeName}}{{/if}}): Promise<{{responseTypeName}}> {
+    return request({
+      endpoint: '{{endpoint}}',
+      method: '{{method}}',
+      secure: {{secure}},
+    }{{#if hasOptions}}, options{{/if}}) as Promise<{{responseTypeName}}>;
+  },
+  {{/each}}
+});

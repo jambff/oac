@@ -43,11 +43,14 @@ describe('Request', () => {
         },
       } as any;
 
-      const response = await request({
-        endpoint: '/user/{id}',
-        method: 'get',
-        secure: false,
-      }, options);
+      const response = await request(
+        {
+          endpoint: '/user/{id}',
+          method: 'get',
+          secure: false,
+        },
+        options,
+      );
 
       expect(response).toBe('mock-response');
       expect(axiosInstance.request).toHaveBeenCalledTimes(1);
@@ -60,49 +63,56 @@ describe('Request', () => {
       });
     });
 
-    it.each([
-      null,
-      undefined,
-      '',
-    ])('throws if a path parameter is %s', async (value) => {
-      const request = createRequestFunction(axiosInstance);
-      const options = {
-        params: {
-          id: value,
-        },
-      } as any;
+    it.each([null, undefined, ''])(
+      'throws if a path parameter is %s',
+      async (value) => {
+        const request = createRequestFunction(axiosInstance);
+        const options = {
+          params: {
+            id: value,
+          },
+        } as any;
 
-      await expect(async () => request({
-        endpoint: '/user/{id}',
-        method: 'get',
-        secure: false,
-      }, options)).rejects.toThrow('Missing required path parameter(s): {id}');
-    });
+        await expect(async () =>
+          request(
+            {
+              endpoint: '/user/{id}',
+              method: 'get',
+              secure: false,
+            },
+            options,
+          ),
+        ).rejects.toThrow('Missing required path parameter(s): {id}');
+      },
+    );
 
-    it.each([
-      0,
-      false,
-    ])('includes a path parameter that is "%s"', async (value) => {
-      const request = createRequestFunction(axiosInstance);
-      const options = {
-        params: {
-          id: value,
-        },
-      } as any;
+    it.each([0, false])(
+      'includes a path parameter that is "%s"',
+      async (value) => {
+        const request = createRequestFunction(axiosInstance);
+        const options = {
+          params: {
+            id: value,
+          },
+        } as any;
 
-      const response = await request({
-        endpoint: '/user/{id}',
-        method: 'get',
-        secure: false,
-      }, options);
+        const response = await request(
+          {
+            endpoint: '/user/{id}',
+            method: 'get',
+            secure: false,
+          },
+          options,
+        );
 
-      expect(response).toBe('mock-response');
-      expect(axiosInstance.request).toHaveBeenCalledTimes(1);
-      expect(axiosInstance.request).toHaveBeenCalledWith({
-        url: `/user/${value}`,
-        method: 'get',
-      });
-    });
+        expect(response).toBe('mock-response');
+        expect(axiosInstance.request).toHaveBeenCalledTimes(1);
+        expect(axiosInstance.request).toHaveBeenCalledWith({
+          url: `/user/${value}`,
+          method: 'get',
+        });
+      },
+    );
 
     it('makes a request with data', async () => {
       const request = createRequestFunction(axiosInstance);
@@ -112,11 +122,14 @@ describe('Request', () => {
         },
       } as any;
 
-      const response = await request({
-        endpoint: '/my-endpoint',
-        method: 'post',
-        secure: false,
-      }, options);
+      const response = await request(
+        {
+          endpoint: '/my-endpoint',
+          method: 'post',
+          secure: false,
+        },
+        options,
+      );
 
       expect(response).toBe('mock-response');
       expect(axiosInstance.request).toHaveBeenCalledTimes(1);
@@ -129,45 +142,46 @@ describe('Request', () => {
       });
     });
 
-    it.each([
-      null,
-      undefined,
-      {},
-    ])('ignores a query given as %s', async (query) => {
-      const request = createRequestFunction(axiosInstance);
-      const options = {
-        query,
-      } as any;
+    it.each([null, undefined, {}])(
+      'ignores a query given as %s',
+      async (query) => {
+        const request = createRequestFunction(axiosInstance);
+        const options = {
+          query,
+        } as any;
 
-      const response = await request({
-        endpoint: '/my-endpoint',
-        method: 'get',
-        secure: false,
-      }, options);
+        const response = await request(
+          {
+            endpoint: '/my-endpoint',
+            method: 'get',
+            secure: false,
+          },
+          options,
+        );
 
-      expect(response).toBe('mock-response');
-      expect(axiosInstance.request).toHaveBeenCalledTimes(1);
-      expect(axiosInstance.request).toHaveBeenCalledWith({
-        url: '/my-endpoint',
-        method: 'get',
-      });
-    });
+        expect(response).toBe('mock-response');
+        expect(axiosInstance.request).toHaveBeenCalledTimes(1);
+        expect(axiosInstance.request).toHaveBeenCalledWith({
+          url: '/my-endpoint',
+          method: 'get',
+        });
+      },
+    );
 
-    it.each([
-      null,
-      undefined,
-      {},
-    ])('ignores data given as %s', async (data) => {
+    it.each([null, undefined, {}])('ignores data given as %s', async (data) => {
       const request = createRequestFunction(axiosInstance);
       const options = {
         data,
       } as any;
 
-      const response = await request({
-        endpoint: '/my-endpoint',
-        method: 'get',
-        secure: false,
-      }, options);
+      const response = await request(
+        {
+          endpoint: '/my-endpoint',
+          method: 'get',
+          secure: false,
+        },
+        options,
+      );
 
       expect(response).toBe('mock-response');
       expect(axiosInstance.request).toHaveBeenCalledTimes(1);
@@ -186,11 +200,13 @@ describe('Request', () => {
         throw err;
       });
 
-      await expect(async () => request({
-        endpoint: '/my-endpoint',
-        method: 'get',
-        secure: false,
-      })).rejects.toThrow('Bad thing');
+      await expect(async () =>
+        request({
+          endpoint: '/my-endpoint',
+          method: 'get',
+          secure: false,
+        }),
+      ).rejects.toThrow('Bad thing');
     });
 
     it('appends the authorization header if one returned from getAuthorizationHeader', async () => {

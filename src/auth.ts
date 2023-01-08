@@ -1,10 +1,10 @@
 import decode from 'jwt-decode';
-import { JamBffError } from './errors';
+import { OpenApiClientError } from './errors';
 
 type DecodedToken = {
   role?: string | string[];
   exp: number;
-}
+};
 
 export type AccessToken = string | null | undefined;
 
@@ -36,7 +36,7 @@ const isTokenExpired = (accessToken: string) => {
  * Throw a 401 Unauthorized error.
  */
 const throwUnauthorizedError = (message: string) => {
-  throw new JamBffError(401, message);
+  throw new OpenApiClientError(401, message);
 };
 
 function assertDefined<T>(
@@ -90,12 +90,6 @@ export const getAuthorizationHeader = async (
 
   if (!accessToken) {
     accessToken = await getRefreshedAccessToken(refreshAccessToken);
-  }
-
-  // If the user is an admin and their token has expired but the route was not
-  // secure anyway then we can still go ahead and make the request.
-  if (!secure && isTokenExpired(accessToken)) {
-    return null;
   }
 
   if (isTokenExpired(accessToken)) {

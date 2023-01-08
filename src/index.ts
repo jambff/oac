@@ -3,7 +3,7 @@ import type { components } from './types';
 
 // @ts-ignore
 export * from './client';
-export { isJamBffError, JamBffError } from './errors';
-export { createJamBffClient, JamBffClientOptions } from './create';
+export { isOpenApiClientError, OpenApiClientError } from './errors';
+export { createOpenApiClient, OpenApiClientOptions } from './create';
 
-export type JamBffModels = components['schemas'];
+export type ApiModels = components['schemas'];

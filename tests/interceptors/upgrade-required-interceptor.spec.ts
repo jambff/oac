@@ -51,26 +51,29 @@ describe('createUpgradeRequiredInterceptor', () => {
       expect(onUpgradeRequired).toHaveBeenCalledTimes(1);
     });
 
-    it.each([400, 404, 500])('does not upgrade for a %s error', async (statusCode) => {
-      console.error = jest.fn();
+    it.each([400, 404, 500])(
+      'does not upgrade for a %s error',
+      async (statusCode) => {
+        console.error = jest.fn();
 
-      const error = {
-        response: {
-          status: statusCode,
-        },
-      } as unknown as AxiosError;
+        const error = {
+          response: {
+            status: statusCode,
+          },
+        } as unknown as AxiosError;
 
-      const onUpgradeRequired = jest.fn();
-      const interceptor = createUpgradeRequiredInterceptor(onUpgradeRequired);
+        const onUpgradeRequired = jest.fn();
+        const interceptor = createUpgradeRequiredInterceptor(onUpgradeRequired);
 
-      try {
-        await expect(interceptor.error(error)).rejects.toEqual(error);
-      } catch (e) {
-        // Do nothing
-      }
+        try {
+          await expect(interceptor.error(error)).rejects.toEqual(error);
+        } catch (e) {
+          // Do nothing
+        }
 
-      expect(onUpgradeRequired).not.toHaveBeenCalled();
-    });
+        expect(onUpgradeRequired).not.toHaveBeenCalled();
+      },
+    );
 
     it('does not upgrade for a non-406 error with no response body', async () => {
       console.error = jest.fn();
@@ -97,7 +100,9 @@ describe('createUpgradeRequiredInterceptor', () => {
       const mockResponse = { foo: 'bar' };
       const interceptor = createUpgradeRequiredInterceptor();
 
-      const result = interceptor.success(mockResponse as unknown as AxiosResponse);
+      const result = interceptor.success(
+        mockResponse as unknown as AxiosResponse,
+      );
 
       expect(result).toEqual(mockResponse);
     });

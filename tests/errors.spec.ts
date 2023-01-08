@@ -1,21 +1,21 @@
-import { isJamBffError, JamBffError } from '../src/errors';
+import { isOpenApiClientError, OpenApiClientError } from '../src/errors';
 
 describe('Errors', () => {
-  describe('isJamBffError', () => {
-    it('returns true if an error is a JamBffError', () => {
-      const error = new JamBffError(500, 'Internal Server Error');
+  describe('isOpenApiClientError', () => {
+    it('returns true if an error is a OpenApiClientError', () => {
+      const error = new OpenApiClientError(500, 'Internal Server Error');
 
-      expect(isJamBffError(error)).toBe(true);
+      expect(isOpenApiClientError(error)).toBe(true);
     });
 
-    it('returns false if an error is not a JamBffError', () => {
+    it('returns false if an error is not a OpenApiClientError', () => {
       const error = new Error();
 
-      expect(isJamBffError(error)).toBe(false);
+      expect(isOpenApiClientError(error)).toBe(false);
     });
 
     it('returns false if an error is not an error object', () => {
-      expect(isJamBffError('')).toBe(false);
+      expect(isOpenApiClientError('')).toBe(false);
     });
   });
 });

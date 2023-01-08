@@ -1,10 +1,7 @@
-# Jambff API Client
+# Jambff OpenAPI Client
 
-A JavaScript OpenAPI client.
-
-The API client is generated automatically from the
-[OpenAPI specification](https://swagger.io/specification/) served by the
-Jambff server.
+A JavaScript API client generated automatically from a given
+[OpenAPI specification](https://swagger.io/specification/).
 
 **Table of Contents**
 
@@ -18,7 +15,7 @@ Jambff server.
 ## Installation
 
 ```sh
-yarn add @jambff/client
+yarn add @jambff/openapi-client
 ```
 
 ## Initialisation
@@ -26,9 +23,9 @@ yarn add @jambff/client
 An API client can be created as follows:
 
 ```js
-import { createJamBffClient } from '@jambff/client';
+import { createOpenApiClient } from '@jambff/openapi-client';
 
-const jambff = createJamBffClient.create({
+const client = createOpenApiClient.create({
   env: 'staging',
   getAccessToken: () => 'my-access-token',
   refreshAccessToken: () => 'my-new-access-token',
@@ -63,7 +60,7 @@ For example, given the following (simplified) OpenAPI specification:
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "{{title}}"
+    "title": "My API"
   },
   "paths": {
     "/example/{id}/get-stuff": {
@@ -88,11 +85,11 @@ For example, given the following (simplified) OpenAPI specification:
 When we run this code:
 
 ```js
-import { createJamBffClient } from '@jambff/client';
+import { createOpenApiClient } from '@jambff/openapi-client';
 
-const jambff = createJamBffClient({ env: 'staging' });
+const client = createOpenApiClient({ env: 'staging' });
 
-jambff.myExampleOperation({
+client.myExampleOperation({
   params: { id: 123 },
   query: { limit: 1 },
 });
@@ -104,22 +101,15 @@ A request like this would be made:
 GET /example/123/get-stuff?limit=1
 ```
 
-The OpenAPI docs generated for the Jambff API show the operation ID for each
-endpoint on the right. For example, with the docs
-shown below we would call `jambff.getSavedItems()` to make a request to the
-`/saved-items` endpoint.
-
-![Example Open API HTML doc operations](./docs/example-open-api-html-operations.png)
-
 ## Models
 
 You can import TypeScript interfaces generated from the API server models via
-`JamBffModels`, for example:
+`ApiModels`, for example:
 
 ```ts
-import { JamBffModels } from '@jambff/client';
+import { ApiModels } from '@jambff/client';
 
-const post: JamBffModels['Post'] = {
+const post: ApiModels['Post'] = {
   title: 'My Post',
 };
 ```
@@ -128,23 +118,15 @@ const post: JamBffModels['Post'] = {
 
 The API client supports JWT token-based authentication. Any access token
 provided via the `getAccessToken()` function will be automatically attached to
-requests that require it. If a request fails an attempt is made to refresh the
-token by calling the `refreshAccessToken()` function and the request retried.
-If the retry fails a 401 error will be thrown, at which point the consuming
-application can handle this error as appropriate (e.g. redirect the user to sign
-in again).
+requests that require it. That is, those marked where the operation in the
+OpenAPI specs has a `security` property.
 
-If an access token has expired an attempt will be made to refresh the token
+If a request fails an attempt is made to refresh the token by calling the
+`refreshAccessToken()` function and the request is retried. If the retry fails a
+401 error will be thrown, at which point the consuming application can handle
+this error as appropriate (e.g. redirect the user to sign in again). If the
+access token has expired an attempt will be made to refresh the token
 before making the initial request, thus saving on unnecessary API calls.
-
-For data available via GET endpoints of public APIs that is not
-considered sensitive, if we were to send the `Authorization` header along with
-every request then there is a risk that edge caches would effectively consider all
-requests to be unique for each user, vastly lowering the cache hit rate
-(especially true for applications where users must be logged in). Therefore, the
-header will only be attached to requests when the Jambff API has marked up a
-particular endpoint as requiring authentication
-(see the [Jambff API docs](../api/README.md)).
 
 ## Error handling
 
@@ -168,18 +150,18 @@ following properties:
 | `constraint` | The name of the constraint that failed.                 |
 | `message`    | A message explaining why the constraint failed.         |
 
-The `isJamBffError()` function can be used to determine if an error is a Jambff
-error, for example:
+The `isOpenApiClientError()` function can be used to determine if an error is a
+Jambff error, for example:
 
 ```js
-import { createJamBffClient, isJamBffError } from '@jambff/client';
+import { createOpenApiClient, isOpenApiClientError } from '@jambff/openapi-client';
 
-const jambff = createJamBffClient({ env: 'staging' });
+const client = createOpenApiClient({ env: 'staging' });
 
 try {
-  await jambff.myExampleOperation();
+  await client.myExampleOperation();
 } catch(err) {
-  if (isJamBffError(err)) {
+  if (isOpenApiClientError(err)) {
     console.error(`HTTP Error: ${err.statusCode}`);
 
     return;

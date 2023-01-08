@@ -1,5 +1,9 @@
 import { getOapiSpec } from '@jambff/api';
-import { getTypeScriptReader, getJsonSchemaWriter, makeConverter } from 'typeconv';
+import {
+  getTypeScriptReader,
+  getJsonSchemaWriter,
+  makeConverter,
+} from 'typeconv';
 import path from 'path';
 import assert from 'assert';
 import { pascalCase } from 'pascal-case';
@@ -68,19 +72,25 @@ const getFunctionResponseType = (operationId, operationSchema) => {
   const { responses } = operationSchema.properties || {};
 
   if (!responses) {
-    throw new Error(`No responses were defined for operation ID "${operationId}".`);
+    throw new Error(
+      `No responses were defined for operation ID "${operationId}".`,
+    );
   }
 
-  const successStatusCodes = Object.keys(responses.properties).filter((statusCode) => (
-    statusCode.startsWith('2')
-  ));
+  const successStatusCodes = Object.keys(responses.properties).filter(
+    (statusCode) => statusCode.startsWith('2'),
+  );
 
   if (!successStatusCodes.length) {
-    throw new Error(`No success responses were defined for operation ID "${operationId}".`);
+    throw new Error(
+      `No success responses were defined for operation ID "${operationId}".`,
+    );
   }
 
   if (successStatusCodes.length > 1) {
-    throw new Error(`Multiple success responses were defined for operation ID "${operationId}".`);
+    throw new Error(
+      `Multiple success responses were defined for operation ID "${operationId}".`,
+    );
   }
 
   const [successStatusCode] = successStatusCodes;
@@ -89,7 +99,9 @@ const getFunctionResponseType = (operationId, operationSchema) => {
   try {
     return getTypeReferenceFromJson(content);
   } catch (err) {
-    throw new Error(`Invalid success responses schema was defined for operation ID "${operationId}": ${err.message}.`);
+    throw new Error(
+      `Invalid success responses schema was defined for operation ID "${operationId}": ${err.message}.`,
+    );
   }
 };
 
@@ -106,7 +118,9 @@ const getDataType = (operationId, operationSchema) => {
   try {
     return getTypeReferenceFromJson(requestBody.properties.content);
   } catch (err) {
-    throw new Error(`Invalid request body schema was defined for operation ID "${operationId}": ${err.message}.`);
+    throw new Error(
+      `Invalid request body schema was defined for operation ID "${operationId}": ${err.message}.`,
+    );
   }
 };
 
@@ -139,46 +153,71 @@ const hasRequiredParametersType = (operationSchema, subType) => {
 /**
  * Get the core details about the API's operations.
  */
-const getFlatOperations = ({ paths }, jsonSchemaTypes) => Object
-  .entries(paths)
-  .reduce((acc, [endpoint, endpointConfig]) => [
-    ...acc,
-    ...Object.entries(endpointConfig).map(([method, methodConfig]) => {
-      const { operationId } = methodConfig;
-      const operationSchema = jsonSchemaTypes.definitions.operations.properties[operationId];
-      const dataTypeRef = getDataType(operationId, operationSchema);
-      const pathParametersTypeRef = getParametersType(operationId, operationSchema, 'path');
-      const queryParametersTypeRef = getParametersType(operationId, operationSchema, 'query');
-      const hasRequiredQueryParameters = hasRequiredParametersType(operationSchema, 'query');
+const getFlatOperations = ({ paths }, jsonSchemaTypes) =>
+  Object.entries(paths).reduce(
+    (acc, [endpoint, endpointConfig]) => [
+      ...acc,
+      ...Object.entries(endpointConfig).map(([method, methodConfig]) => {
+        const { operationId } = methodConfig;
+        const operationSchema =
+          jsonSchemaTypes.definitions.operations.properties[operationId];
 
-      return {
-        endpoint,
-        method,
-        operationId,
-        secure: !!(methodConfig.security || []).length,
-        hasOptions: pathParametersTypeRef || queryParametersTypeRef || dataTypeRef,
-        responseTypeRef: getFunctionResponseType(operationId, operationSchema),
-        dataTypeRef,
-        pathParametersTypeRef,
-        queryParametersTypeRef,
-        responseTypeName: pascalCase(`${operationId}Response`),
-        optionsTypeName: pascalCase(`${operationId}Options`),
-        queryParametersTypeName: pascalCase(`${operationId}QueryParameters`),
-        pathParametersTypeName: pascalCase(`${operationId}PathParameters`),
-        dataTypeName: pascalCase(`${operationId}Data`),
-        hasRequiredQueryParameters,
-        summary: methodConfig.summary,
-        description: methodConfig.description,
-        tags: methodConfig.tags,
-        parameters: methodConfig.parameters,
-      };
-    }),
-  ], []);
+        const dataTypeRef = getDataType(operationId, operationSchema);
+        const pathParametersTypeRef = getParametersType(
+          operationId,
+          operationSchema,
+          'path',
+        );
+
+        const queryParametersTypeRef = getParametersType(
+          operationId,
+          operationSchema,
+          'query',
+        );
+
+        const hasRequiredQueryParameters = hasRequiredParametersType(
+          operationSchema,
+          'query',
+        );
+
+        return {
+          endpoint,
+          method,
+          operationId,
+          secure: !!(methodConfig.security || []).length,
+          hasOptions:
+            pathParametersTypeRef || queryParametersTypeRef || dataTypeRef,
+          responseTypeRef: getFunctionResponseType(
+            operationId,
+            operationSchema,
+          ),
+          dataTypeRef,
+          pathParametersTypeRef,
+          queryParametersTypeRef,
+          responseTypeName: pascalCase(`${operationId}Response`),
+          optionsTypeName: pascalCase(`${operationId}Options`),
+          queryParametersTypeName: pascalCase(`${operationId}QueryParameters`),
+          pathParametersTypeName: pascalCase(`${operationId}PathParameters`),
+          dataTypeName: pascalCase(`${operationId}Data`),
+          hasRequiredQueryParameters,
+          summary: methodConfig.summary,
+          description: methodConfig.description,
+          tags: methodConfig.tags,
+          parameters: methodConfig.parameters,
+        };
+      }),
+    ],
+    [],
+  );
 
 /**
  * Build a file that defines the API client functions.
  */
-const buildClientFile = async (operations, operationsResponses, operationsOptions) => {
+const buildClientFile = async (
+  operations,
+  operationsResponses,
+  operationsOptions,
+) => {
   const fileName = 'client.ts';
   const templatePath = path.join(TEMPLATES_DIR, `${fileName}.tmpl`);
   const outPath = path.join(SRC_DIR, fileName);
@@ -243,9 +282,9 @@ const validateOapiSpec = (oapiSpec, operations) => {
   );
 
   const operationIds = operations.map(({ operationId }) => operationId);
-  const duplicateOperationIds = operationIds.filter((item, index) => (
-    operationIds.indexOf(item) !== index
-  ));
+  const duplicateOperationIds = operationIds.filter(
+    (item, index) => operationIds.indexOf(item) !== index,
+  );
 
   assert.ok(
     !duplicateOperationIds.length,
@@ -261,7 +300,9 @@ export const build = async () => {
   const types = await openapiTS(oapiSpec);
   const jsonSchemaTypes = await convertTsToJsonSchema(types);
   const operations = getFlatOperations(oapiSpec, jsonSchemaTypes);
-  const operationsResponses = operations.map(({ responseTypeName }) => responseTypeName);
+  const operationsResponses = operations.map(
+    ({ responseTypeName }) => responseTypeName,
+  );
   const operationsOptions = operations
     .filter(({ hasOptions }) => hasOptions)
     .map(({ optionsTypeName }) => optionsTypeName);

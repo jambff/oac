@@ -1,5 +1,5 @@
 import { AxiosError, AxiosResponse } from 'axios';
-import { JamBffError } from '../../src/errors';
+import { OpenApiClientError } from '../../src/errors';
 import { createResponseDebugInterceptor } from '../../src/interceptors';
 
 const originalConsoleWarn = console.warn;
@@ -43,13 +43,13 @@ describe('createResponseDebugInterceptor', () => {
         err = e;
       }
 
-      expect((err as JamBffError).message).toBe(
+      expect((err as OpenApiClientError).message).toBe(
         `${statusCode} Client did something wrong [GET http://api.com/endpoint]`,
       );
 
-      expect((err as JamBffError).statusCode).toBe(statusCode);
-      expect((err as JamBffError).name).toBe('JamBffError');
-      expect((err as JamBffError).errors).toEqual([]);
+      expect((err as OpenApiClientError).statusCode).toBe(statusCode);
+      expect((err as OpenApiClientError).name).toBe('OpenApiClientError');
+      expect((err as OpenApiClientError).errors).toEqual([]);
 
       expect(onError).not.toHaveBeenCalled();
       expect(console.error).not.toHaveBeenCalled();
@@ -85,13 +85,13 @@ describe('createResponseDebugInterceptor', () => {
         err = e;
       }
 
-      expect((err as JamBffError).message).toBe(
+      expect((err as OpenApiClientError).message).toBe(
         '500 Internal Server Error [GET http://api.com/endpoint]',
       );
 
-      expect((err as JamBffError).statusCode).toBe(500);
-      expect((err as JamBffError).name).toBe('JamBffError');
-      expect((err as JamBffError).errors).toEqual([]);
+      expect((err as OpenApiClientError).statusCode).toBe(500);
+      expect((err as OpenApiClientError).name).toBe('OpenApiClientError');
+      expect((err as OpenApiClientError).errors).toEqual([]);
 
       expect(console.error).toHaveBeenCalledTimes(1);
       expect(console.error).toHaveBeenCalledWith(err);
@@ -128,13 +128,13 @@ describe('createResponseDebugInterceptor', () => {
         err = e;
       }
 
-      expect((err as JamBffError).message).toBe(
+      expect((err as OpenApiClientError).message).toBe(
         '500 Internal Server Error [POST http://api.com/endpoint]',
       );
 
-      expect((err as JamBffError).statusCode).toBe(500);
-      expect((err as JamBffError).name).toBe('JamBffError');
-      expect((err as JamBffError).errors).toEqual([]);
+      expect((err as OpenApiClientError).statusCode).toBe(500);
+      expect((err as OpenApiClientError).name).toBe('OpenApiClientError');
+      expect((err as OpenApiClientError).errors).toEqual([]);
 
       expect(onError).toHaveBeenCalledTimes(1);
       expect(onError).toHaveBeenCalledWith(err);
@@ -142,46 +142,45 @@ describe('createResponseDebugInterceptor', () => {
       expect(console.error).not.toHaveBeenCalled();
     });
 
-    it.each([
-      undefined,
-      {},
-      '',
-    ])('logs an error when the API response data is "%s"', async (data) => {
-      console.error = jest.fn();
+    it.each([undefined, {}, ''])(
+      'logs an error when the API response data is "%s"',
+      async (data) => {
+        console.error = jest.fn();
 
-      const error = {
-        message: 'Bad thing',
-        response: {
-          status: 500,
-          data,
-        },
-        config: {
-          url: '/endpoint',
-          baseURL: 'http://api.com',
-          method: 'post',
-        },
-      } as unknown as AxiosError;
+        const error = {
+          message: 'Bad thing',
+          response: {
+            status: 500,
+            data,
+          },
+          config: {
+            url: '/endpoint',
+            baseURL: 'http://api.com',
+            method: 'post',
+          },
+        } as unknown as AxiosError;
 
-      const interceptor = createResponseDebugInterceptor();
+        const interceptor = createResponseDebugInterceptor();
 
-      let err;
+        let err;
 
-      try {
-        interceptor.error(error);
-      } catch (e) {
-        err = e;
-      }
+        try {
+          interceptor.error(error);
+        } catch (e) {
+          err = e;
+        }
 
-      expect((err as JamBffError).message).toBe(
-        '500 Bad thing [POST http://api.com/endpoint]',
-      );
+        expect((err as OpenApiClientError).message).toBe(
+          '500 Bad thing [POST http://api.com/endpoint]',
+        );
 
-      expect((err as JamBffError).statusCode).toBe(500);
-      expect((err as JamBffError).name).toBe('JamBffError');
+        expect((err as OpenApiClientError).statusCode).toBe(500);
+        expect((err as OpenApiClientError).name).toBe('OpenApiClientError');
 
-      expect(console.error).toHaveBeenCalledTimes(1);
-      expect(console.error).toHaveBeenCalledWith(err);
-    });
+        expect(console.error).toHaveBeenCalledTimes(1);
+        expect(console.error).toHaveBeenCalledWith(err);
+      },
+    );
 
     it('logs an error when the response body does not exist', async () => {
       console.error = jest.fn();
@@ -206,13 +205,13 @@ describe('createResponseDebugInterceptor', () => {
         err = e;
       }
 
-      expect((err as JamBffError).message).toBe(
+      expect((err as OpenApiClientError).message).toBe(
         '500 Bad thing [GET http://api.com/endpoint]',
       );
 
-      expect((err as JamBffError).statusCode).toBe(500);
-      expect((err as JamBffError).name).toBe('JamBffError');
-      expect((err as JamBffError).errors).toBeUndefined();
+      expect((err as OpenApiClientError).statusCode).toBe(500);
+      expect((err as OpenApiClientError).name).toBe('OpenApiClientError');
+      expect((err as OpenApiClientError).errors).toBeUndefined();
 
       expect(console.error).toHaveBeenCalledTimes(1);
       expect(console.error).toHaveBeenCalledWith(err);
@@ -224,7 +223,9 @@ describe('createResponseDebugInterceptor', () => {
       const mockResponse = { foo: 'bar' };
       const interceptor = createResponseDebugInterceptor();
 
-      const result = interceptor.success(mockResponse as unknown as AxiosResponse);
+      const result = interceptor.success(
+        mockResponse as unknown as AxiosResponse,
+      );
 
       expect(result).toEqual(mockResponse);
     });

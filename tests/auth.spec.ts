@@ -1,4 +1,4 @@
-import { JamBffError } from '../src/errors';
+import { OpenApiClientError } from '../src/errors';
 import { getAuthorizationHeader } from '../src/auth';
 import { generateAccessToken } from './utils';
 
@@ -34,16 +34,16 @@ describe('Auth', () => {
     expect(auth).toBeNull();
   });
 
-  it.each([
-    undefined,
-    'some-other-role',
-  ])('does not append an access token for unsecure routes if user roles equals %s', async (role) => {
-    const accessToken = generateFreshAccessToken({ role });
-    const getAccessToken = () => accessToken;
-    const auth = await getAuthorizationHeader(false, getAccessToken);
+  it.each([undefined, 'some-other-role'])(
+    'does not append an access token for unsecure routes if user roles equals %s',
+    async (role) => {
+      const accessToken = generateFreshAccessToken({ role });
+      const getAccessToken = () => accessToken;
+      const auth = await getAuthorizationHeader(false, getAccessToken);
 
-    expect(auth).toBeNull();
-  });
+      expect(auth).toBeNull();
+    },
+  );
 
   it('throws for secure routes if no getAccessToken function was given', async () => {
     let err;
@@ -54,32 +54,32 @@ describe('Auth', () => {
       err = error;
     }
 
-    expect((err as JamBffError).statusCode).toBe(401);
-    expect((err as JamBffError).name).toBe('JamBffError');
-    expect((err as JamBffError).message).toBe(
+    expect((err as OpenApiClientError).statusCode).toBe(401);
+    expect((err as OpenApiClientError).name).toBe('OpenApiClientError');
+    expect((err as OpenApiClientError).message).toBe(
       'Authorization is required but no `getAccessToken()` function was provided.',
     );
   });
 
-  it.each([
-    null,
-    'no good',
-  ])('throws for secure routes if getAccessToken returns "%s" and refreshAccessToken not given', async (accessToken) => {
-    const getAccessToken = () => accessToken;
-    let err;
+  it.each([null, 'no good'])(
+    'throws for secure routes if getAccessToken returns "%s" and refreshAccessToken not given',
+    async (accessToken) => {
+      const getAccessToken = () => accessToken;
+      let err;
 
-    try {
-      await getAuthorizationHeader(true, getAccessToken);
-    } catch (error) {
-      err = error;
-    }
+      try {
+        await getAuthorizationHeader(true, getAccessToken);
+      } catch (error) {
+        err = error;
+      }
 
-    expect((err as JamBffError).statusCode).toBe(401);
-    expect((err as JamBffError).name).toBe('JamBffError');
-    expect((err as JamBffError).message).toBe(
-      'Authorization is required but there is no valid access token and no `refreshAccessToken()` function was provided.',
-    );
-  });
+      expect((err as OpenApiClientError).statusCode).toBe(401);
+      expect((err as OpenApiClientError).name).toBe('OpenApiClientError');
+      expect((err as OpenApiClientError).message).toBe(
+        'Authorization is required but there is no valid access token and no `refreshAccessToken()` function was provided.',
+      );
+    },
+  );
 
   it('throws for secure routes if getAccessToken and refreshAccessToken return no tokens', async () => {
     const getAccessToken = () => null;
@@ -92,9 +92,9 @@ describe('Auth', () => {
       err = error;
     }
 
-    expect((err as JamBffError).statusCode).toBe(401);
-    expect((err as JamBffError).name).toBe('JamBffError');
-    expect((err as JamBffError).message).toBe(
+    expect((err as OpenApiClientError).statusCode).toBe(401);
+    expect((err as OpenApiClientError).name).toBe('OpenApiClientError');
+    expect((err as OpenApiClientError).message).toBe(
       'Authorization is required but there is no valid access token and nothing was returned from `refreshAccessToken()`.',
     );
   });
@@ -104,7 +104,11 @@ describe('Auth', () => {
     const freshAccessToken = generateFreshAccessToken();
     const getAccessToken = () => expiredAccessToken;
     const refreshAccessToken = () => freshAccessToken;
-    const auth = await getAuthorizationHeader(true, getAccessToken, refreshAccessToken);
+    const auth = await getAuthorizationHeader(
+      true,
+      getAccessToken,
+      refreshAccessToken,
+    );
 
     expect(auth).toBe(`Bearer ${freshAccessToken}`);
   });
@@ -121,9 +125,9 @@ describe('Auth', () => {
       err = error;
     }
 
-    expect((err as JamBffError).statusCode).toBe(401);
-    expect((err as JamBffError).name).toBe('JamBffError');
-    expect((err as JamBffError).message).toBe(
+    expect((err as OpenApiClientError).statusCode).toBe(401);
+    expect((err as OpenApiClientError).name).toBe('OpenApiClientError');
+    expect((err as OpenApiClientError).message).toBe(
       'Authorization is required but the access token has expired and `refreshAccessToken()` also returned an expired token.',
     );
   });
@@ -133,7 +137,11 @@ describe('Auth', () => {
     const getAccessToken = () => expiredAccessToken;
     const refreshAccessToken = () => expiredAccessToken;
 
-    const auth = await getAuthorizationHeader(false, getAccessToken, refreshAccessToken);
+    const auth = await getAuthorizationHeader(
+      false,
+      getAccessToken,
+      refreshAccessToken,
+    );
 
     expect(auth).toBeNull();
   });

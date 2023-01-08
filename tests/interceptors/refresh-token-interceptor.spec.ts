@@ -116,7 +116,9 @@ describe('createRefreshTokenInterceptor', () => {
       const refreshAccessToken = async () => null;
       const interceptor = createRefreshTokenInterceptor(refreshAccessToken);
 
-      const result = interceptor.success(mockResponse as unknown as AxiosResponse);
+      const result = interceptor.success(
+        mockResponse as unknown as AxiosResponse,
+      );
 
       expect(result).toEqual(mockResponse);
     });

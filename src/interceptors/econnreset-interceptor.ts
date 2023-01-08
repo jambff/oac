@@ -17,11 +17,7 @@ export const createEconnresetInterceptor = () => ({
     const { config, request, code } = error;
     const { reusedSocket } = request || {};
 
-    if (
-      reusedSocket
-      && code === 'ECONNRESET'
-      && !config._econnresetRetry
-    ) {
+    if (reusedSocket && code === 'ECONNRESET' && !config._econnresetRetry) {
       config._econnresetRetry = true;
 
       return axios(config);

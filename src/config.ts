@@ -1,16 +1,16 @@
-export type JamBffClientEnv = 'staging' | 'production';
+export type OpenApiClientEnv = 'staging' | 'production';
 
 type BaseUrls = {
   staging: string;
   production: string;
-}
+};
 
 const BASE_URLS: BaseUrls = {
   staging: 'https://example.staging-api.co.uk',
   production: 'https://example.api.co.uk',
 };
 
-export const getBaseUrl = (env?: JamBffClientEnv, baseURL?: string) => {
+export const getBaseUrl = (env?: OpenApiClientEnv, baseURL?: string) => {
   if (baseURL) {
     return baseURL;
   }

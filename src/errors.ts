@@ -2,24 +2,20 @@ type ValidationError = {
   property: string;
   constraint: string;
   message: string;
-}
+};
 
-export class JamBffError extends Error {
+export class OpenApiClientError extends Error {
   statusCode: number;
 
   errors?: ValidationError[];
 
-  isJamBffError = true;
+  isOpenApiClientError = true;
 
-  constructor(
-    statusCode: number,
-    message: string,
-    errors?: ValidationError[],
-  ) {
+  constructor(statusCode: number, message: string, errors?: ValidationError[]) {
     super(message);
 
     this.statusCode = statusCode;
-    this.name = 'JamBffError';
+    this.name = 'OpenApiClientError';
     this.errors = errors;
   }
 }
@@ -27,4 +23,5 @@ export class JamBffError extends Error {
 /**
  * Determines whether a value is (probably) an error thrown by the API client.
  */
-export const isJamBffError = (val: any): val is JamBffError => !!val?.isJamBffError;
+export const isOpenApiClientError = (val: any): val is OpenApiClientError =>
+  !!val?.isOpenApiClientError;

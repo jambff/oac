@@ -1,6 +1,6 @@
 import axios, { AxiosInstance } from 'axios';
 import qs from 'qs';
-import { create, JamBffClient, version } from './generated';
+import { create, OpenApiClient, version } from './generated';
 import { createRequestFunction } from './request';
 import {
   createRefreshTokenInterceptor,
@@ -8,11 +8,11 @@ import {
   createResponseDebugInterceptor,
   createUpgradeRequiredInterceptor,
 } from './interceptors';
-import { getBaseUrl, JamBffClientEnv } from './config';
+import { getBaseUrl, OpenApiClientEnv } from './config';
 import { TokenRetrieverFunction } from './auth';
 
-export type JamBffClientOptions = {
-  env: JamBffClientEnv;
+export type OpenApiClientOptions = {
+  env: OpenApiClientEnv;
   baseURL?: string;
   getAccessToken?: TokenRetrieverFunction;
   refreshAccessToken?: TokenRetrieverFunction;
@@ -29,22 +29,26 @@ const createAxiosInstance = ({
   refreshAccessToken,
   onError,
   onUpgradeRequired,
-}: JamBffClientOptions): AxiosInstance => {
+}: OpenApiClientOptions): AxiosInstance => {
   const axiosInstance = axios.create({
     baseURL: getBaseUrl(env, baseURL),
     headers: {
       'Content-Type': 'application/json',
       Accept: `application/vnd.jambff+json; version=${version}`,
     },
-    paramsSerializer: (params) => qs.stringify(params, {
-      arrayFormat: 'brackets',
-    }),
+    paramsSerializer: (params) =>
+      qs.stringify(params, {
+        arrayFormat: 'brackets',
+      }),
   });
 
-  const refreshTokenInterceptor = createRefreshTokenInterceptor(refreshAccessToken);
+  const refreshTokenInterceptor =
+    createRefreshTokenInterceptor(refreshAccessToken);
+
   const econnresetInterceptor = createEconnresetInterceptor();
   const responseDebugInterceptor = createResponseDebugInterceptor(onError);
-  const upgradeRequiredInterceptor = createUpgradeRequiredInterceptor(onUpgradeRequired);
+  const upgradeRequiredInterceptor =
+    createUpgradeRequiredInterceptor(onUpgradeRequired);
 
   axiosInstance.interceptors.response.use(
     refreshTokenInterceptor.success,
@@ -70,9 +74,11 @@ const createAxiosInstance = ({
 };
 
 /**
- * Create the Jambff client.
+ * Create the API client.
  */
-export const createJamBffClient = (options: JamBffClientOptions): JamBffClient => {
+export const createOpenApiClient = (
+  options: OpenApiClientOptions,
+): OpenApiClient => {
   const axiosInstance = createAxiosInstance(options);
   const request = createRequestFunction(
     axiosInstance,

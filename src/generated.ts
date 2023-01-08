@@ -1,8 +1,8 @@
 // The files referenced below are generated as part of the build process.
 export {
   create,
-  JamBffClient,
-  JamBffRequest,
+  OpenApiClient,
+  OpenApiRequest,
   OperationConfig,
   OperationOptions,
   // @ts-ignore

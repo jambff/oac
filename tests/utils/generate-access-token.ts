@@ -11,8 +11,5 @@ const { privateKey } = generateKeyPairSync('rsa', {
 /**
  * Get a JWT token.
  */
-export default (claims = {}) => sign(
-  claims,
-  privateKey,
-  { algorithm: 'RS256' },
-);
+export default (claims = {}) =>
+  sign(claims, privateKey, { algorithm: 'RS256' });

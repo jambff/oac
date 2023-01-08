@@ -61,18 +61,18 @@ export type OperationConfig = {
   secure: boolean;
 }
 
-export type JamBffRequest = (
+export type OpenApiRequest = (
   operationConfig: OperationConfig,
   options?: OperationOptions,
 ) => Promise<OperationResponses>;
 
-export type JamBffClient = {
+export type OpenApiClient = {
   {{#each operations}}
   {{operationId}}: ({{#if hasOptions}}options: {{optionsTypeName}}{{/if}}) => Promise<{{responseTypeName}}>;
   {{/each}}
 }
 
-export const create = (request: JamBffRequest): JamBffClient => ({
+export const create = (request: OpenApiRequest): OpenApiClient => ({
   {{#each operations}}
   async {{operationId}}({{#if hasOptions}}options: {{optionsTypeName}}{{/if}}): Promise<{{responseTypeName}}> {
     return request({

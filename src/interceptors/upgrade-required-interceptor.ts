@@ -1,6 +1,8 @@
 import { AxiosResponse } from 'axios';
 
-export const createUpgradeRequiredInterceptor = (onUpgradeRequired?: () => void) => ({
+export const createUpgradeRequiredInterceptor = (
+  onUpgradeRequired?: () => void,
+) => ({
   success: (res: AxiosResponse) => res,
   error: (error: any) => {
     const { response, statusCode } = error;

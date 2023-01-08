@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { createJamBffClient, JamBffClientOptions } from '../src/create';
-import { JamBffClientEnv } from '../src/config';
+import { createOpenApiClient, OpenApiClientOptions } from '../src/create';
+import { OpenApiClientEnv } from '../src/config';
 import { create } from '../src/generated';
 import { createRequestFunction } from '../src/request';
 import {
@@ -13,22 +13,34 @@ import {
 jest.mock('axios');
 jest.mock('../src/request');
 jest.mock('../src/interceptors');
-jest.mock('../src/version', () => ({
-  version: '42.3.4',
-}), { virtual: true });
+jest.mock(
+  '../src/version',
+  () => ({
+    version: '42.3.4',
+  }),
+  { virtual: true },
+);
 
 jest.mock('../src/generated');
-jest.mock('../src/client', () => ({
-  create: () => 'mock-jambff-client',
-}), { virtual: true });
+jest.mock(
+  '../src/client',
+  () => ({
+    create: () => 'mock-openapi-client',
+  }),
+  { virtual: true },
+);
 
-jest.mock('../src/types', () => ({
-  components: [],
-}), { virtual: true });
+jest.mock(
+  '../src/types',
+  () => ({
+    components: [],
+  }),
+  { virtual: true },
+);
 
 type BaseUrls = {
   [x: string]: string;
-}
+};
 
 const mockAxiosClient = {
   interceptors: {
@@ -44,7 +56,7 @@ const baseUrls: BaseUrls = {
 
 describe('Create', () => {
   beforeEach(() => {
-    (create as jest.Mock).mockReturnValue('mock-jambff-client');
+    (create as jest.Mock).mockReturnValue('mock-openapi-client');
     (axios.create as jest.Mock).mockReturnValue(mockAxiosClient);
     (createRequestFunction as jest.Mock).mockReturnValue('mock-request');
 
@@ -69,40 +81,40 @@ describe('Create', () => {
     });
   });
 
-  describe('createJamBffClient', () => {
-    it.each([
-      'staging',
-      'production',
-    ] as JamBffClientEnv[])('creates an axios instance for the %s environment', (env) => {
-      const client = createJamBffClient({
-        env,
-        getAccessToken: () => null,
-        refreshAccessToken: () => null,
-      });
+  describe('createOpenApiClient', () => {
+    it.each(['staging', 'production'] as OpenApiClientEnv[])(
+      'creates an axios instance for the %s environment',
+      (env) => {
+        const client = createOpenApiClient({
+          env,
+          getAccessToken: () => null,
+          refreshAccessToken: () => null,
+        });
 
-      expect(client).toBe('mock-jambff-client');
+        expect(client).toBe('mock-openapi-client');
 
-      expect(axios.create).toHaveBeenCalledTimes(1);
-      expect(axios.create).toHaveBeenCalledWith({
-        baseURL: baseUrls[env],
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/vnd.jambff+json; version=42.3.4',
-        },
-        paramsSerializer: expect.any(Function),
-      });
-    });
+        expect(axios.create).toHaveBeenCalledTimes(1);
+        expect(axios.create).toHaveBeenCalledWith({
+          baseURL: baseUrls[env],
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/vnd.jambff+json; version=42.3.4',
+          },
+          paramsSerializer: expect.any(Function),
+        });
+      },
+    );
 
     it('creates a client based on an axios instance', () => {
       const getAccessToken = () => null;
       const refreshAccessToken = () => null;
-      const client = createJamBffClient({
+      const client = createOpenApiClient({
         env: 'staging',
         getAccessToken,
         refreshAccessToken,
       });
 
-      expect(client).toBe('mock-jambff-client');
+      expect(client).toBe('mock-openapi-client');
 
       expect(createRequestFunction).toHaveBeenCalledTimes(1);
       expect(createRequestFunction).toHaveBeenCalledWith(
@@ -116,34 +128,40 @@ describe('Create', () => {
     });
 
     it('creates an axios instance with a base URL rather than an env', () => {
-      const client = createJamBffClient({
+      const client = createOpenApiClient({
         env: 'staging',
         baseURL: 'http://127.0.0.1:7000',
         getAccessToken: () => null,
         refreshAccessToken: () => null,
       });
 
-      expect(client).toBe('mock-jambff-client');
+      expect(client).toBe('mock-openapi-client');
 
       expect(axios.create).toHaveBeenCalledTimes(1);
-      expect(axios.create).toHaveBeenCalledWith(expect.objectContaining({
-        baseURL: 'http://127.0.0.1:7000',
-      }));
+      expect(axios.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          baseURL: 'http://127.0.0.1:7000',
+        }),
+      );
     });
 
     it('throws if an unknown env is given', () => {
-      expect(() => createJamBffClient({
-        env: 'unknown' as JamBffClientEnv,
-        getAccessToken: () => null,
-        refreshAccessToken: () => null,
-      })).toThrow('Not a known `env`: unknown');
+      expect(() =>
+        createOpenApiClient({
+          env: 'unknown' as OpenApiClientEnv,
+          getAccessToken: () => null,
+          refreshAccessToken: () => null,
+        }),
+      ).toThrow('Not a known `env`: unknown');
     });
 
     it('throws if no env or base URL is given', () => {
-      expect(() => createJamBffClient({
-        getAccessToken: () => null,
-        refreshAccessToken: () => null,
-      } as JamBffClientOptions)).toThrow('Either a `baseURL` or an `env` must be given');
+      expect(() =>
+        createOpenApiClient({
+          getAccessToken: () => null,
+          refreshAccessToken: () => null,
+        } as OpenApiClientOptions),
+      ).toThrow('Either a `baseURL` or an `env` must be given');
     });
 
     it('registers the interceptors', () => {
@@ -151,7 +169,7 @@ describe('Create', () => {
       const refreshAccessToken = () => null;
       const onError = () => null;
 
-      createJamBffClient({
+      createOpenApiClient({
         env: 'staging',
         getAccessToken,
         refreshAccessToken,
@@ -159,7 +177,9 @@ describe('Create', () => {
       });
 
       expect(createRefreshTokenInterceptor).toHaveBeenCalledTimes(1);
-      expect(createRefreshTokenInterceptor).toHaveBeenCalledWith(refreshAccessToken);
+      expect(createRefreshTokenInterceptor).toHaveBeenCalledWith(
+        refreshAccessToken,
+      );
 
       expect(createEconnresetInterceptor).toHaveBeenCalledTimes(1);
       expect(createEconnresetInterceptor).toHaveBeenCalledWith();
@@ -167,7 +187,9 @@ describe('Create', () => {
       expect(createResponseDebugInterceptor).toHaveBeenCalledTimes(1);
       expect(createResponseDebugInterceptor).toHaveBeenCalledWith(onError);
 
-      expect(mockAxiosClient.interceptors.response.use).toHaveBeenCalledTimes(4);
+      expect(mockAxiosClient.interceptors.response.use).toHaveBeenCalledTimes(
+        4,
+      );
       expect(mockAxiosClient.interceptors.response.use).toHaveBeenCalledWith(
         'mock-refresh-access-token-interceptor:success',
         'mock-refresh-access-token-interceptor:error',

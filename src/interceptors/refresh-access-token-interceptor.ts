@@ -18,10 +18,10 @@ export const createRefreshTokenInterceptor = (
     const { config, response } = error;
 
     if (
-      refreshAccessToken
-      && response?.status === 401 // Authentication failed for original req
-      && config.headers?.Authorization // and it included an Authorization header
-      && !config._retry // and we haven't already retried
+      refreshAccessToken &&
+      response?.status === 401 && // Authentication failed for original req
+      config.headers?.Authorization && // and it included an Authorization header
+      !config._retry // and we haven't already retried
     ) {
       config._retry = true;
 

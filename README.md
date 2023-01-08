@@ -6,6 +6,7 @@ A JavaScript API client generated automatically from a given
 **Table of Contents**
 
 - [Installation](#installation)
+- [Configuration](#configuration)
 - [Initialisation](#initialisation)
 - [Usage](#usage)
 - [Models](#models)
@@ -18,7 +19,29 @@ A JavaScript API client generated automatically from a given
 yarn add @jambff/openapi-client
 ```
 
-## Initialisation
+## Configuration
+
+This repo exposes a command line tool that you can run to generate the OpenAPI
+client. Add a script to your `package.json`:
+
+```json
+{
+  "scripts": {
+    "oac": "oac",
+  }
+}
+```
+
+Then run:
+
+```text
+yarn oac -f spec.json
+```
+
+Where `spec.json` is the location of the OpenAPI specification file from which
+you want to generate the client.
+
+## Usage
 
 An API client can be created as follows:
 
@@ -32,8 +55,6 @@ const client = createOpenApiClient.create({
   onError: console.error,
 });
 ```
-
-## Usage
 
 The API client object exposes functions for each API operation. Each function is
 called with an object containing the following properties:

@@ -1,16 +1,20 @@
-import { getOapiSpec } from '@jambff/api';
-import {
+const {
   getTypeScriptReader,
   getJsonSchemaWriter,
   makeConverter,
-} from 'typeconv';
-import path from 'path';
-import assert from 'assert';
-import { pascalCase } from 'pascal-case';
-import openapiTS from 'openapi-typescript';
-import { compileTemplate } from './compile-template';
-import { writeFile } from './write-file';
-import { SRC_DIR, TEMPLATES_DIR } from './constants';
+} = require('typeconv');
+const path = require('path');
+const assert = require('assert');
+const { pascalCase } = require('pascal-case');
+const openapiTS = require('openapi-typescript');
+const { compileTemplate } = require('./compile-template');
+const { writeFile } = require('./write-file');
+const { SRC_DIR, TEMPLATES_DIR } = require('./constants');
+const fse = require('fs-extra');
+const yargs = require('yargs');
+const { hideBin } = require('yargs/helpers');
+
+const { argv } = yargs(hideBin(process.argv));
 
 /**
  * Format a JSON Schema title as a TypeScript refererence.
@@ -292,12 +296,25 @@ const validateOapiSpec = (oapiSpec, operations) => {
   );
 };
 
+const getOapiSpec = () => {
+  const partialSpecPath = argv.f ? argv.f : 'spec.json';
+  const specPath = path.isAbsolute(partialSpecPath)
+    ? partialSpecPath
+    : path.join(process.cwd(), partialSpecPath);
+
+  if (!fse.existsSync(specPath)) {
+    throw new Error(`No spec found at ${specPath}`);
+  }
+
+  return fse.readJSONSync(specPath);
+};
+
 /**
  * Generate all the things.
  */
 export const build = async () => {
   const oapiSpec = getOapiSpec();
-  const types = await openapiTS(oapiSpec);
+  const types = await openapiTS.default(oapiSpec);
   const jsonSchemaTypes = await convertTsToJsonSchema(types);
   const operations = getFlatOperations(oapiSpec, jsonSchemaTypes);
   const operationsResponses = operations.map(

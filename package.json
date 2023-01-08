@@ -9,15 +9,18 @@
   "scripts": {
     "lint": "eslint --ext .js,.jsx,.ts,.tsx,.json .",
     "test": "jest",
-    "build:templates": "node ./builder/index.js",
     "build:cjs": "tsc --module commonjs --outDir dist",
     "build:esm": "tsc --module esnext --outDir dist/esm",
-    "build": "yarn build:templates && yarn build:cjs && yarn build:esm",
+    "build": "yarn build:cjs && yarn build:esm",
     "prebuild": "node ./builder/version.js",
     "prepublishOnly": "node ./builder/version.js",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "generate": "node ./builder/index.js"
   },
   "sideEffects": false,
+  "bin": {
+    "oac": "node ./builder/index.js"
+  },
   "repository": {
     "type": "git",
     "url": "git@github.com:jambff/openapi-client.git"
@@ -39,17 +42,14 @@
     "axios": "^0.27.2",
     "jwt-decode": "^3.1.2",
     "openapi-typescript": "^4.0.0",
-    "qs": "^6.10.3"
+    "qs": "^6.10.3",
+    "yargs": "^17.6.2"
   },
   "devDependencies": {
-    "@jambff/api": "^1.0.0",
-    "fs-extra": "^10.1.0",
-    "handlebars": "^4.7.7",
-    "pascal-case": "^3.1.2",
-    "typeconv": "^1.7.0",
     "@commitlint/config-conventional": "^8.3.4",
     "@types/jest": "^29.0.0",
     "@types/jsonwebtoken": "^8.5.8",
+    "@types/qs": "^6.9.7",
     "@typescript-eslint/eslint-plugin": "^5.22.0",
     "@typescript-eslint/parser": "^5.22.0",
     "commitlint": "^8.3.5",
@@ -62,13 +62,17 @@
     "eslint-plugin-json": "^3.1.0",
     "eslint-plugin-prettier": "^4.2.1",
     "esm": "^3.2.25",
+    "fs-extra": "^11.1.0",
+    "handlebars": "^4.7.7",
     "husky": "^4.2.5",
     "jest": "^29.0.0",
     "jsonwebtoken": "^8.5.1",
     "openapi-types": "^11.0.0",
+    "pascal-case": "^3.1.2",
     "prettier": "^2.8.1",
     "semantic-release": "^19.0.5",
     "ts-jest": "^29.0.0",
+    "typeconv": "^1.7.0",
     "typescript": "^4.6.4"
   }
 }

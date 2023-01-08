@@ -24,6 +24,6 @@ coverage/
 *.swp
 
 # Generated client code
-packages/client/src/client.ts
-packages/client/src/types.ts
-packages/client/src/version.ts
+src/client.ts
+src/types.ts
+src/version.ts

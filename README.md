@@ -161,7 +161,7 @@ You can import TypeScript interfaces generated from the API server models via
 `ApiModels`, for example:
 
 ```ts
-import { ApiModels } from '@jambff/client';
+import { ApiModels } from '@jambff/oac';
 
 const post: ApiModels['Post'] = {
   title: 'My Post',

@@ -10,11 +10,11 @@
     "lint": "eslint --ext .js,.jsx,.ts,.tsx,.json .",
     "test": "jest",
     "typecheck": "tsc --noEmit",
-    "oac": "node ./bin/index.js"
+    "oac": "./bin/index.js"
   },
   "sideEffects": false,
   "bin": {
-    "oac": "node ./bin/index.js"
+    "oac": "./bin/index.js"
   },
   "repository": {
     "type": "git",

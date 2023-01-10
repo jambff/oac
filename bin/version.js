@@ -1,6 +1,8 @@
 const path = require('path');
+const appRoot = require('app-root-path');
 const { SRC_DIR, TEMPLATES_DIR } = require('./constants');
-const { version } = require('../package.json');
+
+const { version } = require(`${appRoot.path}/package.json`);
 
 const { compileTemplate } = require('./compile-template');
 

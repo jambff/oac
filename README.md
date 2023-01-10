@@ -8,7 +8,7 @@ An auto-generated and type-safe [OpenAPI](https://swagger.io/specification/) cli
 - [Generating the client](#generating-the-client)
 - [Initialisation](#initialisation)
 - [Usage](#usage)
-- [Models](#models)
+- [Typescript](#typescript)
 - [Authorization](#authorization)
 - [Error handling](#error-handling)
 
@@ -155,7 +155,7 @@ Becomes:
 GET /example/123/get-stuff?text=hello&filter[]=world&sort[asc]=foo
 ```
 
-## Models
+## Typescript
 
 You can import TypeScript interfaces generated from the API server models via
 `ApiModels`, for example:

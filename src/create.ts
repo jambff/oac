@@ -66,10 +66,12 @@ const createAxiosInstance = ({
     responseDebugInterceptor.error,
   );
 
-  axiosInstance.interceptors.response.use(
-    upgradeRequiredInterceptor.success,
-    upgradeRequiredInterceptor.error,
-  );
+  if (onUpgradeRequired) {
+    axiosInstance.interceptors.response.use(
+      upgradeRequiredInterceptor.success,
+      upgradeRequiredInterceptor.error,
+    );
+  }
 
   return axiosInstance;
 };

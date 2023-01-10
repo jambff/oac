@@ -123,7 +123,7 @@ describe('Create', () => {
       ).toThrow('A `baseURL` must be given');
     });
 
-    it('registers the interceptors', () => {
+    it('registers the default interceptors', () => {
       const getAccessToken = () => null;
       const refreshAccessToken = () => null;
       const onError = () => null;
@@ -147,8 +147,9 @@ describe('Create', () => {
       expect(createResponseDebugInterceptor).toHaveBeenCalledWith(onError);
 
       expect(mockAxiosClient.interceptors.response.use).toHaveBeenCalledTimes(
-        4,
+        3,
       );
+
       expect(mockAxiosClient.interceptors.response.use).toHaveBeenCalledWith(
         'mock-refresh-access-token-interceptor:success',
         'mock-refresh-access-token-interceptor:error',
@@ -162,6 +163,20 @@ describe('Create', () => {
       expect(mockAxiosClient.interceptors.response.use).toHaveBeenCalledWith(
         'mock-response-debug-interceptor:success',
         'mock-response-debug-interceptor:error',
+      );
+    });
+
+    it('registers the forced upgrade interceptor if a callback was given', () => {
+      const onUpgradeRequired = () => null;
+
+      createOpenApiClient({
+        baseURL: 'http://api.com',
+        onUpgradeRequired,
+      });
+
+      expect(createUpgradeRequiredInterceptor).toHaveBeenCalledTimes(1);
+      expect(createUpgradeRequiredInterceptor).toHaveBeenCalledWith(
+        onUpgradeRequired,
       );
 
       expect(mockAxiosClient.interceptors.response.use).toHaveBeenCalledWith(

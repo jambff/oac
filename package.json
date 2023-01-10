@@ -10,8 +10,6 @@
   "scripts": {
     "lint": "eslint --ext .js,.jsx,.ts,.tsx,.json .",
     "test": "jest",
-    "prebuild": "node ./builder/version.js",
-    "prepublishOnly": "node ./builder/version.js",
     "typecheck": "tsc --noEmit",
     "oac": "node ./builder/index.js"
   },

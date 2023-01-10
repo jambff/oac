@@ -1,4 +1,5 @@
 // @ts-ignore
+// eslint-disable-next-line import/no-unresolved
 import { create, OpenApiRequest } from '../client';
 import { OpenApiClientError } from '../errors';
 

@@ -6,6 +6,8 @@ export {
   OperationConfig,
   OperationOptions,
   // @ts-ignore
+  // eslint-disable-next-line import/no-unresolved
 } from './client';
 // @ts-ignore
+// eslint-disable-next-line import/no-unresolved
 export { version } from './version';

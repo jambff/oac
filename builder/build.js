@@ -10,6 +10,7 @@ const { pascalCase } = require('pascal-case');
 const openapiTS = require('openapi-typescript');
 const fse = require('fs-extra');
 const yargs = require('yargs');
+const appRoot = require('app-root-path');
 const { hideBin } = require('yargs/helpers');
 const { compileTemplate } = require('./compile-template');
 const { writeFile } = require('./write-file');
@@ -335,12 +336,7 @@ module.exports.build = async () => {
     buildVersionFile(),
   ]);
 
-  const distDir = path.join(__dirname, '..', 'dist');
+  const distDir = path.join(appRoot.path, 'node_modules', '.oac');
 
   compileTs(path.join(SRC_DIR, 'index.ts'), ModuleKind.CommonJS, distDir);
-  compileTs(
-    path.join(SRC_DIR, 'index.ts'),
-    ModuleKind.ESNext,
-    path.join(distDir, 'esm'),
-  );
 };

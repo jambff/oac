@@ -4,9 +4,8 @@
   "version": "1.0.0",
   "author": "Alex Mendes",
   "license": "MIT",
-  "main": "dist/index.js",
-  "module": "dist/esm/index.js",
-  "types": "dist/index.d.ts",
+  "main": "index.js",
+  "types": "index.d.ts",
   "scripts": {
     "lint": "eslint --ext .js,.jsx,.ts,.tsx,.json .",
     "test": "jest",
@@ -35,10 +34,11 @@
     "bin"
   ],
   "dependencies": {
+    "app-root-path": "^3.1.0",
     "axios": "^0.27.2",
     "fs-extra": "^11.1.0",
-    "jwt-decode": "^3.1.2",
     "handlebars": "^4.7.7",
+    "jwt-decode": "^3.1.2",
     "openapi-types": "^11.0.0",
     "openapi-typescript": "^4.0.0",
     "pascal-case": "^3.1.2",

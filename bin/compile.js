@@ -39,8 +39,8 @@ const compile = (fileNames, options) => {
   }
 };
 
-module.exports.compileTs = (entryPoint, module, outDir) => {
-  compile([entryPoint], {
+module.exports.compileTs = (files, module, outDir) => {
+  compile(files, {
     noEmitOnError: true,
     noImplicitAny: true,
     target: ts.ScriptTarget.ES5,

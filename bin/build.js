@@ -6,6 +6,7 @@ const {
 } = require('typeconv');
 const path = require('path');
 const assert = require('assert');
+const glob = require('fast-glob');
 const { pascalCase } = require('pascal-case');
 const openapiTS = require('openapi-typescript');
 const appRoot = require('app-root-path');
@@ -324,8 +325,9 @@ module.exports.build = async () => {
   ]);
 
   const distDir = path.join(appRoot.path, 'node_modules', '.oac');
+  const files = glob.sync('**.ts', { cwd: SRC_DIR, absolute: true });
 
-  compileTs(path.join(SRC_DIR, 'index.ts'), ModuleKind.CommonJS, distDir);
+  compileTs(files, ModuleKind.CommonJS, distDir);
 
   console.info(`${chalk.green('✔')} OpenAPI client generated`);
 };

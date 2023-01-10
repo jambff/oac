@@ -22,17 +22,8 @@ yarn add @jambff/oac
 ## Generating the client
 
 This repository exposes a command line tool that you can run to generate the
-OpenAPI client. Add a script to your `package.json`:
-
-```json
-{
-  "scripts": {
-    "oac": "oac",
-  }
-}
-```
-
-Then run:
+OpenAPI client. After installing the package you can generate the client from
+an OpenAPI specification with the following command:
 
 ```text
 yarn oac http://example.api.com/docs.json

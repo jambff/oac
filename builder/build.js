@@ -8,17 +8,13 @@ const path = require('path');
 const assert = require('assert');
 const { pascalCase } = require('pascal-case');
 const openapiTS = require('openapi-typescript');
-const fse = require('fs-extra');
-const yargs = require('yargs');
 const appRoot = require('app-root-path');
-const { hideBin } = require('yargs/helpers');
 const { compileTemplate } = require('./compile-template');
 const { writeFile } = require('./write-file');
 const { SRC_DIR, TEMPLATES_DIR } = require('./constants');
 const { compileTs } = require('./compile');
 const { buildVersionFile } = require('./version');
-
-const { argv } = yargs(hideBin(process.argv));
+const { getOapiSpec } = require('./spec');
 
 /**
  * Format a JSON Schema title as a TypeScript refererence.
@@ -300,24 +296,11 @@ const validateOapiSpec = (oapiSpec, operations) => {
   );
 };
 
-const getOapiSpec = () => {
-  const partialSpecPath = argv.f ? argv.f : 'spec.json';
-  const specPath = path.isAbsolute(partialSpecPath)
-    ? partialSpecPath
-    : path.join(process.cwd(), partialSpecPath);
-
-  if (!fse.existsSync(specPath)) {
-    throw new Error(`No spec found at ${specPath}`);
-  }
-
-  return fse.readJSONSync(specPath);
-};
-
 /**
  * Generate all the things.
  */
 module.exports.build = async () => {
-  const oapiSpec = getOapiSpec();
+  const oapiSpec = await getOapiSpec();
   const types = await openapiTS.default(oapiSpec);
   const jsonSchemaTypes = await convertTsToJsonSchema(types);
   const operations = getFlatOperations(oapiSpec, jsonSchemaTypes);

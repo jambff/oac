@@ -34,6 +34,12 @@ OpenAPI client. Add a script to your `package.json`:
 Then run:
 
 ```text
+yarn oac http://example.api.com/docs.json
+```
+
+Alternatively, you can use a JSON file:
+
+```text
 yarn oac -f spec.json
 ```
 

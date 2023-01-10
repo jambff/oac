@@ -11,6 +11,7 @@ An auto-generated and type-safe [OpenAPI](https://swagger.io/specification/) cli
 - [Typescript](#typescript)
 - [Authorization](#authorization)
 - [Error handling](#error-handling)
+- [Forced upgrades](#forced-upgrades)
 
 ## Installation
 
@@ -246,3 +247,33 @@ try {
 
 Errors will be logged to the console. To implement custom error handling you
 can pass an `onError()` callback when setting up the client.
+
+## Forced upgrades
+
+The API client will send an `Accept` header with every request in the format:
+
+```text
+application/vnd.jambff+json; version=[VERSION]
+```
+
+Where `VERSION` is the version from the package.json of your repository. If you
+release a breaking change to your API you may want to build in a mechanism that
+parses this header and responds with a 406 status code if it determines that
+the version is no longer supported.
+
+In your consuming application you can pass in a callback when creating the
+client as below. This callback will be fired whenever the client encounters a
+406 response.
+
+```js
+import { createOpenApiClient } from '@jambff/oac';
+
+const onUpgradeRequired = () => {
+  // Handle upgrade logic
+};
+
+const client = createOpenApiClient.create({
+  baseUrl: 'http://example.api.com',
+  onUpgradeRequired,
+});
+```

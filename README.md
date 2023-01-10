@@ -157,13 +157,32 @@ GET /example/123/get-stuff?text=hello&filter[]=world&sort[asc]=foo
 
 ## Typescript
 
-You can import TypeScript interfaces generated from the API server models via
-`ApiModels`, for example:
+Two types are generated for each API operation. One for the options
+(`params`, `query` and `data`) and one for the response, for example:
+
+```js
+import {
+  createOpenApiClient,
+  MyExampleOptions,
+  MyExampleResponse,
+} from '@jambff/oac';
+
+const client = createOpenApiClient({ baseUrl: 'http://example.api.com' });
+
+export const getMyExample = (
+  options: MyExampleOptions
+): MyExampleResponse => (
+  client.myExampleOperation(options)
+);
+```
+
+Types are also generated for each [OpenAPI component](https://swagger.io/docs/specification/components/)
+present in your specification. These can be imported from `ApiComponents`, for example:
 
 ```ts
-import { ApiModels } from '@jambff/oac';
+import { ApiComponents } from '@jambff/oac';
 
-const post: ApiModels['Post'] = {
+const post: ApiComponents['Post'] = {
   title: 'My Post',
 };
 ```

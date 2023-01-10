@@ -6,4 +6,4 @@ export * from './client';
 export { isOpenApiClientError, OpenApiClientError } from './errors';
 export { createOpenApiClient, OpenApiClientOptions } from './create';
 
-export type ApiModels = components['schemas'];
+export type ApiComponents = components['schemas'];

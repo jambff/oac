@@ -8,12 +8,10 @@ import {
   createResponseDebugInterceptor,
   createUpgradeRequiredInterceptor,
 } from './interceptors';
-import { getBaseUrl, OpenApiClientEnv } from './config';
 import { TokenRetrieverFunction } from './auth';
 
 export type OpenApiClientOptions = {
-  env: OpenApiClientEnv;
-  baseURL?: string;
+  baseURL: string;
   getAccessToken?: TokenRetrieverFunction;
   refreshAccessToken?: TokenRetrieverFunction;
   onError?: (error: any) => void;
@@ -24,14 +22,17 @@ export type OpenApiClientOptions = {
  * Create the base axios instance.
  */
 const createAxiosInstance = ({
-  env,
   baseURL,
   refreshAccessToken,
   onError,
   onUpgradeRequired,
 }: OpenApiClientOptions): AxiosInstance => {
+  if (!baseURL) {
+    throw new Error('A `baseURL` must be given');
+  }
+
   const axiosInstance = axios.create({
-    baseURL: getBaseUrl(env, baseURL),
+    baseURL,
     headers: {
       'Content-Type': 'application/json',
       Accept: `application/vnd.jambff+json; version=${version}`,

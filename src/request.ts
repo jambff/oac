@@ -39,33 +39,33 @@ export const createRequestFunction =
     getAccessToken?: TokenRetrieverFunction,
     refreshAccessToken?: TokenRetrieverFunction,
   ) =>
-    async (operationConfig: OperationConfig, options?: OperationOptions) => {
-      const { endpoint, method, secure } = operationConfig;
+  async (operationConfig: OperationConfig, options?: OperationOptions) => {
+    const { endpoint, method, secure } = operationConfig;
 
-      const axiosRequestConfig: AxiosRequestConfig = {
-        url: populateEndpoint(endpoint, options),
-        method,
-      };
-
-      if (options?.data && Object.keys(options.data).length) {
-        axiosRequestConfig.data = options.data;
-      }
-
-      if (options?.query && Object.keys(options.query).length) {
-        axiosRequestConfig.params = options.query;
-      }
-
-      const authorization = await getAuthorizationHeader(
-        secure,
-        getAccessToken,
-        refreshAccessToken,
-      );
-
-      if (authorization) {
-        axiosRequestConfig.headers = { Authorization: authorization };
-      }
-
-      const res = await axiosInstance.request(axiosRequestConfig);
-
-      return res.data;
+    const axiosRequestConfig: AxiosRequestConfig = {
+      url: populateEndpoint(endpoint, options),
+      method,
     };
+
+    if (options?.data && Object.keys(options.data).length) {
+      axiosRequestConfig.data = options.data;
+    }
+
+    if (options?.query && Object.keys(options.query).length) {
+      axiosRequestConfig.params = options.query;
+    }
+
+    const authorization = await getAuthorizationHeader(
+      secure,
+      getAccessToken,
+      refreshAccessToken,
+    );
+
+    if (authorization) {
+      axiosRequestConfig.headers = { Authorization: authorization };
+    }
+
+    const res = await axiosInstance.request(axiosRequestConfig);
+
+    return res.data;
+  };

@@ -1,6 +1,6 @@
-import path from 'path';
-import fse from 'fs-extra';
-import Handlebars from 'handlebars';
+const path = require('path');
+const fse = require('fs-extra');
+const Handlebars = require('handlebars');
 
 // Custom helpers.
 Handlebars.registerHelper('toLowerCase', (str) =>
@@ -27,7 +27,7 @@ Handlebars.registerHelper('stripWhitespace', (str) =>
 /**
  * Compile a Handlebars template.
  */
-export const compileTemplate = async (
+module.exports.compileTemplate = async (
   templateFilePath,
   outPath,
   templateData,

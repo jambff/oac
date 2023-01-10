@@ -1,12 +1,12 @@
-# Jambff OpenAPI Client
+# OAC
 
-A JavaScript API client generated automatically from a given
+Generates a JavaScript API client from a given
 [OpenAPI specification](https://swagger.io/specification/).
 
 **Table of Contents**
 
 - [Installation](#installation)
-- [Configuration](#configuration)
+- [Generating the client](#generating-the-client)
 - [Initialisation](#initialisation)
 - [Usage](#usage)
 - [Models](#models)
@@ -16,13 +16,13 @@ A JavaScript API client generated automatically from a given
 ## Installation
 
 ```sh
-yarn add @jambff/openapi-client
+yarn add @jambff/oac
 ```
 
-## Configuration
+## Generating the client
 
-This repo exposes a command line tool that you can run to generate the OpenAPI
-client. Add a script to your `package.json`:
+This repository exposes a command line tool that you can run to generate the
+OpenAPI client. Add a script to your `package.json`:
 
 ```json
 {
@@ -46,10 +46,10 @@ you want to generate the client.
 An API client can be created as follows:
 
 ```js
-import { createOpenApiClient } from '@jambff/openapi-client';
+import { createOpenApiClient } from '@jambff/oac';
 
 const client = createOpenApiClient.create({
-  env: 'staging',
+  baseUrl: 'http://example.api.com',
   getAccessToken: () => 'my-access-token',
   refreshAccessToken: () => 'my-new-access-token',
   onError: console.error,
@@ -106,9 +106,9 @@ For example, given the following (simplified) OpenAPI specification:
 When we run this code:
 
 ```js
-import { createOpenApiClient } from '@jambff/openapi-client';
+import { createOpenApiClient } from '@jambff/oac';
 
-const client = createOpenApiClient({ env: 'staging' });
+const client = createOpenApiClient({ baseUrl: 'http://example.api.com' });
 
 client.myExampleOperation({
   params: { id: 123 },
@@ -171,13 +171,13 @@ following properties:
 | `constraint` | The name of the constraint that failed.                 |
 | `message`    | A message explaining why the constraint failed.         |
 
-The `isOpenApiClientError()` function can be used to determine if an error is a
-Jambff error, for example:
+The `isOpenApiClientError()` function can be used to determine if an error is an
+expected OpenAPI client error (i.e. an HTTP error), for example:
 
 ```js
-import { createOpenApiClient, isOpenApiClientError } from '@jambff/openapi-client';
+import { createOpenApiClient, isOpenApiClientError } from '@jambff/oac';
 
-const client = createOpenApiClient({ env: 'staging' });
+const client = createOpenApiClient({ baseUrl: 'http://example.api.com' });
 
 try {
   await client.myExampleOperation();

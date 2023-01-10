@@ -31,7 +31,7 @@
     "@typescript-eslint/no-unused-vars": ["error"],
     "@typescript-eslint/no-non-null-assertion": "error",
     "class-methods-use-this": "off",
-    "indent": ["error", 2, { "SwitchCase": 1, "ignoredNodes": ["PropertyDefinition"] }],
+    "indent": "off",
     "max-classes-per-file": "off",
     "no-underscore-dangle": "off",
     "no-shadow": "off",

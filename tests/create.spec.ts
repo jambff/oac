@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { createOpenApiClient, OpenApiClientOptions } from '../src/create';
-import { OpenApiClientEnv } from '../src/config';
 import { create } from '../src/generated';
 import { createRequestFunction } from '../src/request';
 import {
@@ -25,7 +24,7 @@ jest.mock('../src/generated');
 jest.mock(
   '../src/client',
   () => ({
-    create: () => 'mock-openapi-client',
+    create: () => 'mock-oac',
   }),
   { virtual: true },
 );
@@ -38,10 +37,6 @@ jest.mock(
   { virtual: true },
 );
 
-type BaseUrls = {
-  [x: string]: string;
-};
-
 const mockAxiosClient = {
   interceptors: {
     request: { use: jest.fn() },
@@ -49,14 +44,9 @@ const mockAxiosClient = {
   },
 };
 
-const baseUrls: BaseUrls = {
-  staging: 'https://example.staging-api.co.uk',
-  production: 'https://example.api.co.uk',
-};
-
 describe('Create', () => {
   beforeEach(() => {
-    (create as jest.Mock).mockReturnValue('mock-openapi-client');
+    (create as jest.Mock).mockReturnValue('mock-oac');
     (axios.create as jest.Mock).mockReturnValue(mockAxiosClient);
     (createRequestFunction as jest.Mock).mockReturnValue('mock-request');
 
@@ -82,39 +72,36 @@ describe('Create', () => {
   });
 
   describe('createOpenApiClient', () => {
-    it.each(['staging', 'production'] as OpenApiClientEnv[])(
-      'creates an axios instance for the %s environment',
-      (env) => {
-        const client = createOpenApiClient({
-          env,
-          getAccessToken: () => null,
-          refreshAccessToken: () => null,
-        });
+    it('creates an axios instance', () => {
+      const client = createOpenApiClient({
+        baseURL: 'http://api.com',
+        getAccessToken: () => null,
+        refreshAccessToken: () => null,
+      });
 
-        expect(client).toBe('mock-openapi-client');
+      expect(client).toBe('mock-oac');
 
-        expect(axios.create).toHaveBeenCalledTimes(1);
-        expect(axios.create).toHaveBeenCalledWith({
-          baseURL: baseUrls[env],
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/vnd.jambff+json; version=42.3.4',
-          },
-          paramsSerializer: expect.any(Function),
-        });
-      },
-    );
+      expect(axios.create).toHaveBeenCalledTimes(1);
+      expect(axios.create).toHaveBeenCalledWith({
+        baseURL: 'http://api.com',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/vnd.jambff+json; version=42.3.4',
+        },
+        paramsSerializer: expect.any(Function),
+      });
+    });
 
     it('creates a client based on an axios instance', () => {
       const getAccessToken = () => null;
       const refreshAccessToken = () => null;
       const client = createOpenApiClient({
-        env: 'staging',
+        baseURL: 'http://api.com',
         getAccessToken,
         refreshAccessToken,
       });
 
-      expect(client).toBe('mock-openapi-client');
+      expect(client).toBe('mock-oac');
 
       expect(createRequestFunction).toHaveBeenCalledTimes(1);
       expect(createRequestFunction).toHaveBeenCalledWith(
@@ -127,41 +114,13 @@ describe('Create', () => {
       expect(create).toHaveBeenCalledWith('mock-request');
     });
 
-    it('creates an axios instance with a base URL rather than an env', () => {
-      const client = createOpenApiClient({
-        env: 'staging',
-        baseURL: 'http://127.0.0.1:7000',
-        getAccessToken: () => null,
-        refreshAccessToken: () => null,
-      });
-
-      expect(client).toBe('mock-openapi-client');
-
-      expect(axios.create).toHaveBeenCalledTimes(1);
-      expect(axios.create).toHaveBeenCalledWith(
-        expect.objectContaining({
-          baseURL: 'http://127.0.0.1:7000',
-        }),
-      );
-    });
-
-    it('throws if an unknown env is given', () => {
-      expect(() =>
-        createOpenApiClient({
-          env: 'unknown' as OpenApiClientEnv,
-          getAccessToken: () => null,
-          refreshAccessToken: () => null,
-        }),
-      ).toThrow('Not a known `env`: unknown');
-    });
-
-    it('throws if no env or base URL is given', () => {
+    it('throws if no base URL given', () => {
       expect(() =>
         createOpenApiClient({
           getAccessToken: () => null,
           refreshAccessToken: () => null,
         } as OpenApiClientOptions),
-      ).toThrow('Either a `baseURL` or an `env` must be given');
+      ).toThrow('A `baseURL` must be given');
     });
 
     it('registers the interceptors', () => {
@@ -170,7 +129,7 @@ describe('Create', () => {
       const onError = () => null;
 
       createOpenApiClient({
-        env: 'staging',
+        baseURL: 'http://api.com',
         getAccessToken,
         refreshAccessToken,
         onError,

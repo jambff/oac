@@ -1,5 +1,5 @@
 node_modules/
 coverage/
 dist/
-packages/client/src/client.ts
-packages/client/src/types.ts
+src/client.ts
+src/types.ts

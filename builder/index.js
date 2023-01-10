@@ -1,6 +1,4 @@
-const esmRequire = require('esm')(module);
-
-const { build } = esmRequire('./build.js');
+const { build } = require('./build.js');
 
 (async () => {
   try {

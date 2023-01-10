@@ -1,3 +1,4 @@
+const { ModuleKind } = require('typescript');
 const {
   getTypeScriptReader,
   getJsonSchemaWriter,
@@ -7,12 +8,14 @@ const path = require('path');
 const assert = require('assert');
 const { pascalCase } = require('pascal-case');
 const openapiTS = require('openapi-typescript');
-const { compileTemplate } = require('./compile-template');
-const { writeFile } = require('./write-file');
-const { SRC_DIR, TEMPLATES_DIR } = require('./constants');
 const fse = require('fs-extra');
 const yargs = require('yargs');
 const { hideBin } = require('yargs/helpers');
+const { compileTemplate } = require('./compile-template');
+const { writeFile } = require('./write-file');
+const { SRC_DIR, TEMPLATES_DIR } = require('./constants');
+const { compileTs } = require('./compile');
+const { buildVersionFile } = require('./version');
 
 const { argv } = yargs(hideBin(process.argv));
 
@@ -312,7 +315,7 @@ const getOapiSpec = () => {
 /**
  * Generate all the things.
  */
-export const build = async () => {
+module.exports.build = async () => {
   const oapiSpec = getOapiSpec();
   const types = await openapiTS.default(oapiSpec);
   const jsonSchemaTypes = await convertTsToJsonSchema(types);
@@ -329,5 +332,15 @@ export const build = async () => {
   await Promise.all([
     buildClientFile(operations, operationsResponses, operationsOptions),
     buildTypesFile(types),
+    buildVersionFile(),
   ]);
+
+  const distDir = path.join(__dirname, '..', 'dist');
+
+  compileTs(path.join(SRC_DIR, 'index.ts'), ModuleKind.CommonJS, distDir);
+  compileTs(
+    path.join(SRC_DIR, 'index.ts'),
+    ModuleKind.ESNext,
+    path.join(distDir, 'esm'),
+  );
 };

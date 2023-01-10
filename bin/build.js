@@ -14,7 +14,7 @@ const { writeFile } = require('./write-file');
 const { SRC_DIR, TEMPLATES_DIR } = require('./constants');
 const { compileTs } = require('./compile');
 const { buildVersionFile } = require('./version');
-const { getOapiSpec } = require('./spec');
+const { getOapiSpec } = require('./get-spec');
 
 /**
  * Format a JSON Schema title as a TypeScript refererence.

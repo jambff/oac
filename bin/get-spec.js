@@ -3,6 +3,7 @@ const fse = require('fs-extra');
 const yargs = require('yargs');
 const fetch = require('node-fetch');
 const { hideBin } = require('yargs/helpers');
+const chalk = require('chalk');
 
 const { argv } = yargs(hideBin(process.argv));
 
@@ -15,7 +16,11 @@ module.exports.getSpecFromFile = async (partialSpecPath) => {
     throw new Error(`No spec found at ${specPath}`);
   }
 
-  return fse.readJSONSync(specPath);
+  const json = fse.readJSONSync(specPath);
+
+  console.info(chalk.gray(`OpenAPI specification loaded from ${specPath}`));
+
+  return json;
 };
 
 /**
@@ -26,11 +31,17 @@ module.exports.getOapiSpec = async () => {
     return this.getSpecFromFile(argv.f);
   }
 
-  if (!argv._) {
-    throw new Error(`A URL or spec file must be provided`);
+  const [url] = argv._;
+
+  if (!url) {
+    throw new Error(
+      `A URL or spec file must be provided to generate the API client`,
+    );
   }
 
-  const res = await fetch(argv._);
+  const res = await fetch(url);
+
+  console.info(chalk.gray(`OpenAPI specification loaded from ${url}`));
 
   return res.json();
 };

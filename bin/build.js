@@ -9,6 +9,7 @@ const assert = require('assert');
 const { pascalCase } = require('pascal-case');
 const openapiTS = require('openapi-typescript');
 const appRoot = require('app-root-path');
+const chalk = require('chalk');
 const { compileTemplate } = require('./compile-template');
 const { writeFile } = require('./write-file');
 const { SRC_DIR, TEMPLATES_DIR } = require('./constants');
@@ -307,12 +308,15 @@ module.exports.build = async () => {
   const operationsResponses = operations.map(
     ({ responseTypeName }) => responseTypeName,
   );
+
   const operationsOptions = operations
     .filter(({ hasOptions }) => hasOptions)
     .map(({ optionsTypeName }) => optionsTypeName);
 
+  console.info(chalk.gray('Validating OpenAPI specification'));
   validateOapiSpec(oapiSpec, operations);
 
+  console.info(chalk.gray('Generating OpenAPI client'));
   await Promise.all([
     buildClientFile(operations, operationsResponses, operationsOptions),
     buildTypesFile(types),
@@ -322,4 +326,6 @@ module.exports.build = async () => {
   const distDir = path.join(appRoot.path, 'node_modules', '.oac');
 
   compileTs(path.join(SRC_DIR, 'index.ts'), ModuleKind.CommonJS, distDir);
+
+  console.info(`${chalk.green('✔')} OpenAPI client generated`);
 };

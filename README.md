@@ -1,7 +1,6 @@
 # OAC
 
-Generates a JavaScript API client from a given
-[OpenAPI specification](https://swagger.io/specification/).
+An auto-generated and type-safe [OpenAPI](https://swagger.io/specification/) client.
 
 **Table of Contents**
 
@@ -43,7 +42,7 @@ you want to generate the client.
 
 ## Usage
 
-An API client can be created as follows:
+Once the API client has been generated it can be instantiated as follows:
 
 ```js
 import { createOpenApiClient } from '@jambff/oac';
@@ -56,8 +55,8 @@ const client = createOpenApiClient.create({
 });
 ```
 
-The API client object exposes functions for each API operation. Each function is
-called with an object containing the following properties:
+The resulting API client object exposes functions for each API operation. Each
+function is called with an object containing the following properties:
 
 ### `params`
 
@@ -71,7 +70,8 @@ An object containing a property for each query string parameter.
 
 ### `data`
 
-An object containing key-value to submit as the request body (i.e. for POST or PUT requests).
+An object containing key-value to submit as the request body
+(i.e. for POST or PUT requests).
 
 ---
 
@@ -120,6 +120,33 @@ A request like this would be made:
 
 ```text
 GET /example/123/get-stuff?limit=1
+```
+
+### Query parameter serialization
+
+Arrays are serialized in the brackets format, for example:
+
+```js
+import { createOpenApiClient } from '@jambff/oac';
+
+const client = createOpenApiClient({ baseUrl: 'http://example.api.com' });
+
+client.search({
+  params: { id: 123 },
+  query: {
+    text: 'hello',
+    filter: ['world'],
+    sort: {
+      asc: 'foo',
+    }
+  },
+});
+```
+
+Becomes:
+
+```text
+GET /example/123/get-stuff?text=hello&filter[]=world&sort[asc]=foo
 ```
 
 ## Models

@@ -186,6 +186,9 @@ const getFlatOperations = ({ paths }, jsonSchemaTypes) =>
           'query',
         );
 
+        const hasOptionalOptions =
+          !hasRequiredQueryParameters && !pathParametersTypeRef && !dataTypeRef;
+
         return {
           endpoint,
           method,
@@ -193,6 +196,7 @@ const getFlatOperations = ({ paths }, jsonSchemaTypes) =>
           secure: !!(methodConfig.security || []).length,
           hasOptions:
             pathParametersTypeRef || queryParametersTypeRef || dataTypeRef,
+          hasOptionalOptions,
           responseTypeRef: getFunctionResponseType(
             operationId,
             operationSchema,

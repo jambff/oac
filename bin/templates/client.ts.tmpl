@@ -68,13 +68,13 @@ export type OpenApiRequest = (
 
 export type OpenApiClient = {
   {{#each operations}}
-  {{operationId}}: ({{#if hasOptions}}options: {{optionsTypeName}}{{/if}}) => Promise<{{responseTypeName}}>;
+  {{operationId}}: ({{#if hasOptions}}options{{#if hasOptionalOptions}}?{{/if}}: {{optionsTypeName}}{{/if}}) => Promise<{{responseTypeName}}>;
   {{/each}}
 }
 
 export const create = (request: OpenApiRequest): OpenApiClient => ({
   {{#each operations}}
-  async {{operationId}}({{#if hasOptions}}options: {{optionsTypeName}}{{/if}}): Promise<{{responseTypeName}}> {
+  async {{operationId}}({{#if hasOptions}}options{{#if hasOptionalOptions}}?{{/if}}: {{optionsTypeName}}{{/if}}): Promise<{{responseTypeName}}> {
     return request({
       endpoint: '{{endpoint}}',
       method: '{{method}}',

@@ -92,7 +92,7 @@ describe('Create', () => {
       });
     });
 
-    it.only('sets up the paramsSerializer as expected', () => {
+    it('sets up the paramsSerializer as expected', () => {
       createOpenApiClient({
         baseURL: 'http://api.com',
         getAccessToken: () => null,

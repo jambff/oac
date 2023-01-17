@@ -92,6 +92,21 @@ describe('Create', () => {
       });
     });
 
+    it.only('sets up the paramsSerializer as expected', () => {
+      createOpenApiClient({
+        baseURL: 'http://api.com',
+        getAccessToken: () => null,
+        refreshAccessToken: () => null,
+      });
+
+      const { paramsSerializer } = (axios.create as jest.Mock).mock.calls[0][0];
+
+      expect(paramsSerializer({ foo: 'bar' })).toBe('foo=bar');
+      expect(paramsSerializer({ foo: ['bar', 'baz'] })).toBe(
+        'foo[]=bar&foo[]=baz',
+      );
+    });
+
     it('creates a client based on an axios instance', () => {
       const getAccessToken = () => null;
       const refreshAccessToken = () => null;

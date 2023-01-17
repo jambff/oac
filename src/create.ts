@@ -39,6 +39,7 @@ const createAxiosInstance = ({
     },
     paramsSerializer: (params) =>
       qs.stringify(params, {
+        encodeValuesOnly: true,
         arrayFormat: 'brackets',
       }),
   });

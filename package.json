@@ -31,7 +31,9 @@
   },
   "files": [
     "src",
-    "bin"
+    "bin",
+    "index.js",
+    "index.d.ts"
   ],
   "dependencies": {
     "@types/qs": "^6.9.7",

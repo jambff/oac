@@ -41,7 +41,15 @@ module.exports.getOapiSpec = async () => {
 
   const res = await fetch(url);
 
+  let json;
+
+  try {
+    json = await res.json();
+  } catch (err) {
+    throw new Error(`Failed to load API spec (status code ${res.status})`);
+  }
+
   console.info(chalk.gray(`OpenAPI specification loaded from ${url}`));
 
-  return res.json();
+  return json;
 };

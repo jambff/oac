@@ -3,6 +3,7 @@ import { OpenApiClientError } from '../errors';
 
 export const createResponseDebugInterceptor = (
   onError?: (error: any) => void,
+  debug?: boolean,
 ) => ({
   success: (res: AxiosResponse) => res,
   error: (error: any) => {
@@ -16,7 +17,7 @@ export const createResponseDebugInterceptor = (
     const url = `${config.baseURL}${endpoint}`;
     const msg = `${finalStatus} ${
       data?.message || message
-    } [${method.toUpperCase()} ${url}]`;
+    } <${method.toUpperCase()} ${url}>`;
 
     const openApiClientError = new OpenApiClientError(
       finalStatus,
@@ -25,7 +26,7 @@ export const createResponseDebugInterceptor = (
     );
     const logError = onError || console.error;
 
-    if (isServerError) {
+    if (isServerError || debug) {
       logError(openApiClientError);
     }
 

@@ -51,7 +51,11 @@ const createAxiosInstance = ({
     createRefreshTokenInterceptor(refreshAccessToken);
 
   const econnresetInterceptor = createEconnresetInterceptor();
-  const responseDebugInterceptor = createResponseDebugInterceptor(onError);
+  const responseDebugInterceptor = createResponseDebugInterceptor(
+    onError,
+    debug,
+  );
+
   const requestDebugInterceptor = createRequestDebugInterceptor();
   const upgradeRequiredInterceptor =
     createUpgradeRequiredInterceptor(onUpgradeRequired);

@@ -165,7 +165,10 @@ describe('Create', () => {
       expect(createEconnresetInterceptor).toHaveBeenCalledWith();
 
       expect(createResponseDebugInterceptor).toHaveBeenCalledTimes(1);
-      expect(createResponseDebugInterceptor).toHaveBeenCalledWith(onError);
+      expect(createResponseDebugInterceptor).toHaveBeenCalledWith(
+        onError,
+        undefined,
+      );
 
       expect(mockAxiosClient.interceptors.response.use).toHaveBeenCalledTimes(
         3,
@@ -218,6 +221,12 @@ describe('Create', () => {
       expect(mockAxiosClient.interceptors.request.use).toHaveBeenCalledWith(
         'mock-request-debug-interceptor:success',
         'mock-request-debug-interceptor:error',
+      );
+
+      expect(createResponseDebugInterceptor).toHaveBeenCalledTimes(1);
+      expect(createResponseDebugInterceptor).toHaveBeenCalledWith(
+        undefined,
+        true,
       );
     });
   });

@@ -44,7 +44,7 @@ describe('createResponseDebugInterceptor', () => {
       }
 
       expect((err as OpenApiClientError).message).toBe(
-        `${statusCode} Client did something wrong [GET http://api.com/endpoint]`,
+        `${statusCode} Client did something wrong <GET http://api.com/endpoint>`,
       );
 
       expect((err as OpenApiClientError).statusCode).toBe(statusCode);
@@ -86,7 +86,7 @@ describe('createResponseDebugInterceptor', () => {
       }
 
       expect((err as OpenApiClientError).message).toBe(
-        '500 Internal Server Error [GET http://api.com/endpoint]',
+        '500 Internal Server Error <GET http://api.com/endpoint>',
       );
 
       expect((err as OpenApiClientError).statusCode).toBe(500);
@@ -94,7 +94,62 @@ describe('createResponseDebugInterceptor', () => {
       expect((err as OpenApiClientError).errors).toEqual([]);
 
       expect(console.error).toHaveBeenCalledTimes(1);
-      expect(console.error).toHaveBeenCalledWith(err);
+      expect((console.error as jest.Mock).mock.calls[0][0]).toMatchSnapshot();
+    });
+
+    it('logs a 400 error if in debug mode', async () => {
+      console.error = jest.fn();
+
+      const errors = [
+        {
+          constraint: 'isInt',
+          message: 'id must be an integer number',
+          property: 'id',
+        },
+        {
+          constraint: 'isString',
+          message: 'name must be a string',
+          property: 'name',
+        },
+      ];
+
+      const error = {
+        response: {
+          status: 400,
+          data: {
+            statusCode: 400,
+            message: 'Bad Request',
+            name: 'BadRequest',
+            errors,
+          },
+        },
+        config: {
+          url: '/endpoint',
+          baseURL: 'http://api.com',
+          method: 'put',
+        },
+      } as unknown as AxiosError;
+
+      const interceptor = createResponseDebugInterceptor(undefined, true);
+
+      let err;
+
+      try {
+        interceptor.error(error);
+      } catch (e) {
+        err = e;
+      }
+
+      expect((err as OpenApiClientError).message).toBe(
+        '400 Bad Request <PUT http://api.com/endpoint> id (isInt) id must be an integer number | name (isString) name must be a string',
+      );
+
+      expect((err as OpenApiClientError).statusCode).toBe(400);
+      expect((err as OpenApiClientError).name).toBe('OpenApiClientError');
+      expect((err as OpenApiClientError).errors).toEqual(errors);
+
+      expect(console.error).toHaveBeenCalledTimes(1);
+      expect((console.error as jest.Mock).mock.calls[0][0]).toMatchSnapshot();
     });
 
     it('logs a 500 error using a custom error handler', async () => {
@@ -129,7 +184,7 @@ describe('createResponseDebugInterceptor', () => {
       }
 
       expect((err as OpenApiClientError).message).toBe(
-        '500 Internal Server Error [POST http://api.com/endpoint]',
+        '500 Internal Server Error <POST http://api.com/endpoint>',
       );
 
       expect((err as OpenApiClientError).statusCode).toBe(500);
@@ -171,14 +226,14 @@ describe('createResponseDebugInterceptor', () => {
         }
 
         expect((err as OpenApiClientError).message).toBe(
-          '500 Bad thing [POST http://api.com/endpoint]',
+          '500 Bad thing <POST http://api.com/endpoint>',
         );
 
         expect((err as OpenApiClientError).statusCode).toBe(500);
         expect((err as OpenApiClientError).name).toBe('OpenApiClientError');
 
         expect(console.error).toHaveBeenCalledTimes(1);
-        expect(console.error).toHaveBeenCalledWith(err);
+        expect((console.error as jest.Mock).mock.calls[0][0]).toMatchSnapshot();
       },
     );
 
@@ -206,7 +261,7 @@ describe('createResponseDebugInterceptor', () => {
       }
 
       expect((err as OpenApiClientError).message).toBe(
-        '500 Bad thing [GET http://api.com/endpoint]',
+        '500 Bad thing <GET http://api.com/endpoint>',
       );
 
       expect((err as OpenApiClientError).statusCode).toBe(500);
@@ -214,7 +269,7 @@ describe('createResponseDebugInterceptor', () => {
       expect((err as OpenApiClientError).errors).toBeUndefined();
 
       expect(console.error).toHaveBeenCalledTimes(1);
-      expect(console.error).toHaveBeenCalledWith(err);
+      expect((console.error as jest.Mock).mock.calls[0][0]).toMatchSnapshot();
     });
   });
 

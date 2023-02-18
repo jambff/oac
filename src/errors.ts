@@ -12,7 +12,17 @@ export class OpenApiClientError extends Error {
   isOpenApiClientError = true;
 
   constructor(statusCode: number, message: string, errors?: ValidationError[]) {
-    super(message);
+    super(
+      `${message}${
+        errors?.length
+          ? ` ${errors
+              ?.map(
+                (err) => `${err.property} (${err.constraint}) ${err.message}`,
+              )
+              .join(' | ')}`
+          : ''
+      }`,
+    );
 
     this.statusCode = statusCode;
     this.name = 'OpenApiClientError';

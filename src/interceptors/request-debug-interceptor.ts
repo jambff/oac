@@ -5,9 +5,7 @@ import { AxiosRequestConfig } from 'axios';
  */
 export const createRequestDebugInterceptor = () => ({
   success: (config: AxiosRequestConfig) => {
-    const {
-      baseURL, method, url, params, paramsSerializer,
-    } = config;
+    const { baseURL, method, url, params, paramsSerializer } = config;
 
     if (!url || !method) {
       return;

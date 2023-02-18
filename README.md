@@ -13,6 +13,7 @@ An auto-generated and type-safe [OpenAPI](https://swagger.io/specification/) cli
 - [Error handling](#error-handling)
 - [Debugging](#debugging)
 - [Forced upgrades](#forced-upgrades)
+- [Mocking](#mocking)
 
 ## Installation
 
@@ -282,4 +283,72 @@ const client = createOpenApiClient.create({
   baseUrl: 'http://example.api.com',
   onUpgradeRequired,
 });
+```
+
+## Mocking
+
+You can create a type-safe mock API client by installing the `jest-mock-extended`
+package:
+
+```text
+yarn add jest-mock-extended -D
+```
+
+Creating a file containing something like the following:
+
+```js
+// jest.mockApiClient.ts
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
+import {
+  create,
+  createOpenApiClient,
+  OpenApiClient,
+  OpenApiRequest,
+} from '@immediate_media/openapi-client';
+
+const noop = {} as OpenApiRequest;
+const operations = create(noop);
+
+jest.mock('@immediate_media/openapi-client', () => ({
+  ...jest.requireActual('@immediate_media/openapi-client'),
+  createOpenApiClient: jest.fn(),
+}));
+
+const mockClient = mockDeep<OpenApiClient>() as DeepMockProxy<OpenApiClient> & {
+  [x: string]: jest.Mock;
+};
+
+(createOpenApiClient as jest.Mock).mockReturnValue(mockClient);
+
+Object.keys(operations).forEach((key) => {
+  mockClient[key].mockImplementation(() => {
+    console.warn(
+      `No mock return value set for API client operation ${key}. ` +
+        'Try adding a mock resolved value, for example: ' +
+        `\`apiClient.${key}.mockResolvedValue({ foo: 'bar' })\``,
+    );
+  });
+});
+```
+
+Adding the following to your Jest
+[`setupFilesAfterEnv`](https://jestjs.io/docs/configuration#setupfilesafterenv-array)
+array:
+
+```js
+module.exports = {
+  setupFilesAfterEnv: [
+    './node_modules/@immediate_media/openapi-client/mock.ts',
+  ],
+};
+```
+
+Then in your tests you can then create a mock client by calling the
+`createOpenApiClient()` function. All operations will have been replaced with
+Jest mocks, meaning you can mock API responses like so:
+
+```ts
+const client = createOpenApiClient({ baseURL: 'http://example.api.com' });
+
+client.myOperation.mockResolvedValue({ foo: 'bar' });
 ```

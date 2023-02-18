@@ -7,6 +7,7 @@ import {
   createEconnresetInterceptor,
   createResponseDebugInterceptor,
   createUpgradeRequiredInterceptor,
+  createRequestDebugInterceptor,
 } from '../src/interceptors';
 
 jest.mock('axios');
@@ -68,6 +69,11 @@ describe('Create', () => {
     (createUpgradeRequiredInterceptor as jest.Mock).mockReturnValue({
       success: 'mock-upgrade-required-interceptor:success',
       error: 'mock-upgrade-required-interceptor:error',
+    });
+
+    (createRequestDebugInterceptor as jest.Mock).mockReturnValue({
+      success: 'mock-request-debug-interceptor:success',
+      error: 'mock-request-debug-interceptor:error',
     });
   });
 
@@ -197,6 +203,21 @@ describe('Create', () => {
       expect(mockAxiosClient.interceptors.response.use).toHaveBeenCalledWith(
         'mock-upgrade-required-interceptor:success',
         'mock-upgrade-required-interceptor:error',
+      );
+    });
+
+    it('registers the request debug interceptor in debug mode', () => {
+      createOpenApiClient({
+        baseURL: 'http://api.com',
+        debug: true,
+      });
+
+      expect(createRequestDebugInterceptor).toHaveBeenCalledTimes(1);
+      expect(createRequestDebugInterceptor).toHaveBeenCalledWith();
+
+      expect(mockAxiosClient.interceptors.request.use).toHaveBeenCalledWith(
+        'mock-request-debug-interceptor:success',
+        'mock-request-debug-interceptor:error',
       );
     });
   });

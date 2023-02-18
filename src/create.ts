@@ -7,6 +7,7 @@ import {
   createEconnresetInterceptor,
   createResponseDebugInterceptor,
   createUpgradeRequiredInterceptor,
+  createRequestDebugInterceptor,
 } from './interceptors';
 import { TokenRetrieverFunction } from './auth';
 
@@ -16,6 +17,7 @@ export type OpenApiClientOptions = {
   refreshAccessToken?: TokenRetrieverFunction;
   onError?: (error: any) => void;
   onUpgradeRequired?: () => void;
+  debug?: boolean;
 };
 
 /**
@@ -26,6 +28,7 @@ const createAxiosInstance = ({
   refreshAccessToken,
   onError,
   onUpgradeRequired,
+  debug,
 }: OpenApiClientOptions): AxiosInstance => {
   if (!baseURL) {
     throw new Error('A `baseURL` must be given');
@@ -49,6 +52,7 @@ const createAxiosInstance = ({
 
   const econnresetInterceptor = createEconnresetInterceptor();
   const responseDebugInterceptor = createResponseDebugInterceptor(onError);
+  const requestDebugInterceptor = createRequestDebugInterceptor();
   const upgradeRequiredInterceptor =
     createUpgradeRequiredInterceptor(onUpgradeRequired);
 
@@ -71,6 +75,13 @@ const createAxiosInstance = ({
     axiosInstance.interceptors.response.use(
       upgradeRequiredInterceptor.success,
       upgradeRequiredInterceptor.error,
+    );
+  }
+
+  if (debug) {
+    axiosInstance.interceptors.request.use(
+      requestDebugInterceptor.success,
+      requestDebugInterceptor.error,
     );
   }
 

@@ -2,3 +2,4 @@ export { createRefreshTokenInterceptor } from './refresh-access-token-intercepto
 export { createEconnresetInterceptor } from './econnreset-interceptor';
 export { createResponseDebugInterceptor } from './response-debug-interceptor';
 export { createUpgradeRequiredInterceptor } from './upgrade-required-interceptor';
+export { createRequestDebugInterceptor } from './request-debug-interceptor';

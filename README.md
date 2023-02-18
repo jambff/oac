@@ -11,6 +11,7 @@ An auto-generated and type-safe [OpenAPI](https://swagger.io/specification/) cli
 - [Typescript](#typescript)
 - [Authorization](#authorization)
 - [Error handling](#error-handling)
+- [Debugging](#debugging)
 - [Forced upgrades](#forced-upgrades)
 
 ## Installation
@@ -238,6 +239,20 @@ try {
 
 Errors will be logged to the console. To implement custom error handling you
 can pass an `onError()` callback when setting up the client.
+
+## Debugging
+
+You can log all outgoing requests by passing the `debug` property when creating
+the client:
+
+```js
+import { createOpenApiClient } from '@jambff/oac';
+
+const client = createOpenApiClient({
+  baseUrl: 'http://example.api.com',
+  debug: true,
+});
+```
 
 ## Forced upgrades
 

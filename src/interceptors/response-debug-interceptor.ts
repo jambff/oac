@@ -23,6 +23,7 @@ export const createResponseDebugInterceptor = (
       finalStatus,
       msg,
       data?.errors,
+      typeof data === 'object' ? data : undefined,
     );
     const logError = onError || console.error;
 

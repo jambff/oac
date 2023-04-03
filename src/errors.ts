@@ -7,13 +7,18 @@ type ValidationError = {
 export class OpenApiClientError extends Error {
   statusCode: number;
 
-  rawMessage: string;
+  data?: Record<string, any>;
 
   errors?: ValidationError[];
 
   isOpenApiClientError = true;
 
-  constructor(statusCode: number, message: string, errors?: ValidationError[]) {
+  constructor(
+    statusCode: number,
+    message: string,
+    errors?: ValidationError[],
+    data?: Record<string, any>,
+  ) {
     super(
       `${message}${
         errors?.length
@@ -26,7 +31,7 @@ export class OpenApiClientError extends Error {
       }`,
     );
 
-    this.rawMessage = message;
+    this.data = data;
     this.statusCode = statusCode;
     this.name = 'OpenApiClientError';
     this.errors = errors;

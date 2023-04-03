@@ -7,6 +7,8 @@ type ValidationError = {
 export class OpenApiClientError extends Error {
   statusCode: number;
 
+  rawMessage: string;
+
   errors?: ValidationError[];
 
   isOpenApiClientError = true;
@@ -24,6 +26,7 @@ export class OpenApiClientError extends Error {
       }`,
     );
 
+    this.rawMessage = message;
     this.statusCode = statusCode;
     this.name = 'OpenApiClientError';
     this.errors = errors;
